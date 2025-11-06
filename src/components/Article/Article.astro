@@ -9,7 +9,7 @@ const { content } = Astro.props;
 const sanitizedContent = DOMPurify.sanitize(content);
 ---
 
-<article set:html={sanitizedContent} />
+<article class="ink-article" set:html={sanitizedContent} />
 
 <style>
     article {
@@ -18,7 +18,21 @@ const sanitizedContent = DOMPurify.sanitize(content);
         font-size: 1rem;
         color: #000;
     }
-    article p {
-        margin-bottom: 1rem;
+
+    article :global(figure) {
+        margin: 0;
+        max-width: 100%;
+    }
+
+    article :global(figcaption) {
+        text-align: center;
+        text-wrap: balance;
+    }
+
+    article :global(img) {
+        max-width: 100%;
+        height: auto;
+        display: block;
+        margin: 1rem auto;
     }
 </style>
