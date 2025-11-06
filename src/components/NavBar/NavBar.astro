@@ -29,6 +29,10 @@ const { title, articleId } = Astro.props;
         border-bottom: 1px solid #ddd;
         margin: 0;
         padding: 0.5rem;
+        /* Make the Nav to always stay at top */
+        position: sticky;
+        top: 0;
+        background-color: #fff;
     }
     ul {
         list-style-type: none;
