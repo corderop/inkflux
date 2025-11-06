@@ -1,0 +1,76 @@
+---
+import BackwardIcon from "../icons/BackwardIcon.astro";
+import ForwardIcon from "../icons/ForwardIcon.astro";
+
+interface Props {
+    title: string;
+}
+
+const { title } = Astro.props;
+---
+
+<nav>
+    <ul>
+        <li class="nav-button">
+            <button><BackwardIcon /></button>
+        </li>
+        <li class="nav-title">
+            <h1>{title}</h1>
+        </li>
+        <li class="nav-button">
+            <button><ForwardIcon /></button>
+        </li>
+    </ul>
+</nav>
+
+<style>
+    nav {
+        border-bottom: 1px solid #ddd;
+        margin: 0;
+        padding: 0.5rem;
+    }
+    ul {
+        list-style-type: none;
+        padding: 0;
+        margin: 0;
+        display: flex;
+    }
+    .nav-title {
+        flex-grow: 1;
+        flex-shrink: 1;
+        margin: 0 1rem;
+        overflow: hidden;
+    }
+    .nav-title h1 {
+        margin: 0;
+        /* Text styles */
+        font-size: 1rem;
+        text-align: center;
+        font-weight: bold;
+        line-height: 24px;
+        /* Overflow title will be hidden behind ... */
+        overflow: hidden;
+        white-space: nowrap;
+        text-overflow: ellipsis;
+    }
+    .nav-button {
+        flex-grow: 0;
+        flex-shrink: 0;
+        height: 24px;
+        width: 24px;
+    }
+    .nav-button button {
+        background: none;
+        color: inherit;
+        border: none;
+        padding: 0;
+        font: inherit;
+        cursor: pointer;
+        outline: inherit;
+        width: 100%;
+        height: 100%;
+    }
+    .nav-button button:hover {
+        cursor: pointer;
+    }
+</style>
