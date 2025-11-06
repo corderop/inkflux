@@ -35,4 +35,8 @@ const sanitizedContent = DOMPurify.sanitize(content);
         display: block;
         margin: 1rem auto;
     }
+
+    article :global(p:first-of-type) {
+        margin-top: 0;
+    }
 </style>

@@ -1,19 +1,15 @@
 ---
 import Article from "../components/Article/Article.astro";
 import NavBar from "../components/NavBar/NavBar.astro";
-import { MinifluxClient } from "../lib/miniflux-client";
 
-const minifluxClient = new MinifluxClient(
-    import.meta.env.MINIFLUX_URL,
-    import.meta.env.MINIFLUX_USERNAME,
-    import.meta.env.MINIFLUX_PASSWORD,
-);
-const entries = await minifluxClient.getEntries();
-const entry = entries.entries[10];
+interface Props {
+    articleId: number;
+    title: string;
+    content: string;
+}
 
-const title = entry.title;
-const content = entry.content;
+const { articleId, title, content } = Astro.props;
 ---
 
-<NavBar title={title} />
+<NavBar title={title} articleId={articleId} />
 <Article content={content} />

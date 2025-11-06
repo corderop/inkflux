@@ -1,0 +1,25 @@
+---
+export const prerender = false;
+import ReadPage from "../../containers/ReadPage.astro";
+import Body from "../../layouts/Body.astro";
+import { MinifluxClient } from "../../lib/miniflux-client";
+
+const { article } = Astro.params;
+
+const articleId = Number(article) ?? 0;
+
+const minifluxClient = new MinifluxClient(
+    import.meta.env.MINIFLUX_URL,
+    import.meta.env.MINIFLUX_USERNAME,
+    import.meta.env.MINIFLUX_PASSWORD,
+);
+const entries = await minifluxClient.getEntries();
+const entry = entries.entries[articleId];
+
+const title = entry.title;
+const content = entry.content;
+---
+
+<Body>
+    <ReadPage articleId={articleId} title={title} content={content} />
+</Body>
