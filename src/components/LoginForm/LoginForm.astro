@@ -1,0 +1,55 @@
+<form method="POST" action="/api/login">
+    <label for="server">
+        Miniflux Server URL
+        <input
+            id="server"
+            name="server"
+            placeholder="https://miniflux.example.com/"
+            autocomplete="url"
+            required
+        />
+    </label>
+
+    <label for="password">
+        API Token
+        <input
+            id="password"
+            name="password"
+            type="password"
+            autocomplete="current-password"
+            required
+        />
+    </label>
+
+    <button>Login</button>
+</form>
+
+<style>
+    form {
+        display: flex;
+        flex-direction: column;
+        width: 15rem;
+        gap: 1rem;
+        padding: 1rem;
+        margin: 1rem auto;
+    }
+
+    label {
+        display: flex;
+        flex-direction: column;
+    }
+
+    input {
+        padding: 0.5rem;
+        border-radius: 0.2rem;
+        border: 1px solid #ccc;
+    }
+
+    button {
+        padding: 0.5rem;
+        border-radius: 0.2rem;
+        border: 1px solid #ccc;
+        background-color: #eee;
+        cursor: pointer;
+    }
+</style>

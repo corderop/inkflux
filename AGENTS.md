@@ -5,6 +5,7 @@
 # General guidelines
 
 * Do not submit a lot of code for user review. Split big changes in smaller ones so the user can easily review them.
+* Always assume that the dev environment is running (Do not do pnpm run dev)
 
 ## Tech stack
 * Typescript

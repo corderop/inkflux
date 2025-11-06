@@ -1,34 +1,32 @@
 
-import { Buffer } from 'buffer';
 import type { EntriesResponse } from './types';
 
 export class MinifluxClient {
   private readonly apiUrl: string;
-  private readonly username: string;
-  private readonly password: string;
+  private readonly token: string;
 
-  constructor(apiUrl: string, username: string, password: string) {
+  constructor(apiUrl: string, token: string) {
     this.apiUrl = apiUrl;
-    this.username = username;
-    this.password = password;
+    this.token = token;
   }
 
-  private getAuthorizationHeader(): string {
-    return `Basic ${Buffer.from(`${this.username}:${this.password}`).toString('base64')}`;
+  private getAuthorizationHeaders(): { [key: string]: string } {
+    return {
+      'X-Auth-Token': this.token
+    }
   }
 
   private async fetch<T>(path: string, options: RequestInit = {}): Promise<T> {
     const url = `${this.apiUrl}${path}`;
-    console.log(this.getAuthorizationHeader())
     const response = await fetch(url, {
       ...options,
       headers: {
         ...options.headers,
-        'Authorization': this.getAuthorizationHeader(),
+        ...this.getAuthorizationHeaders(),
         'Content-Type': 'application/json'
       }
     });
-    console.log(response)
+
     if (!response.ok) {
       throw new Error(`HTTP error! status: ${response.status}`);
     }

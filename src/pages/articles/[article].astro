@@ -2,17 +2,21 @@
 export const prerender = false;
 import ReadPage from "../../containers/ReadPage.astro";
 import Body from "../../layouts/Body.astro";
+import {
+    MINIFLUX_SERVER_URL_COOKIE_NAME,
+    MINIFLUX_API_TOKEN_COOKIE_NAME,
+} from "../../lib/constants";
 import { MinifluxClient } from "../../lib/miniflux-client";
 
 const { article } = Astro.params;
 
 const articleId = Number(article) ?? 0;
 
-const minifluxClient = new MinifluxClient(
-    import.meta.env.MINIFLUX_URL,
-    import.meta.env.MINIFLUX_USERNAME,
-    import.meta.env.MINIFLUX_PASSWORD,
-);
+const serverUrl =
+    Astro.cookies.get(MINIFLUX_SERVER_URL_COOKIE_NAME)?.value ?? "";
+const apiToken = Astro.cookies.get(MINIFLUX_API_TOKEN_COOKIE_NAME)?.value ?? "";
+
+const minifluxClient = new MinifluxClient(serverUrl, apiToken);
 const entries = await minifluxClient.getEntries();
 const entry = entries.entries[articleId];
 
