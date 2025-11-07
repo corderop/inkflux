@@ -1,5 +1,5 @@
 
-import type { EntriesResponse } from './types';
+import type { EntriesResponse, GetEntriesFilters } from './types';
 
 export class MinifluxClient {
   private readonly apiUrl: string;
@@ -34,7 +34,14 @@ export class MinifluxClient {
     return response.json();
   }
 
-  public async getEntries(): Promise<EntriesResponse> {
-    return this.fetch<EntriesResponse>('/v1/entries');
+  public async getEntries(filters: GetEntriesFilters = {}): Promise<EntriesResponse> {
+    const queryParams = new URLSearchParams();
+    Object.entries(filters).filter(([_, value]) => value !== undefined).forEach(([key, value]) => {
+      queryParams.append(key, String(value))
+    })
+
+    const queryString = queryParams.toString();
+    const path = queryString ? `/v1/entries?${queryString}` : '/v1/entries';
+    return this.fetch<EntriesResponse>(path);
   }
 }

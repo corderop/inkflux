@@ -55,3 +55,15 @@ export interface EntriesResponse {
   total: number;
   entries: Entry[];
 }
+
+type Status = 'read' | 'unread' | 'removed';
+type GetEntriesOrder = 'id' | 'status' | 'published_at' | 'category_title' | 'category_id';
+type OrderDirection = 'asc' | 'desc';
+
+export type GetEntriesFilters = {
+  status?: Status;
+  offset?: number;
+  limit?: number;
+  order?: GetEntriesOrder;
+  direction?: OrderDirection;
+};

@@ -17,7 +17,11 @@ const serverUrl =
 const apiToken = Astro.cookies.get(MINIFLUX_API_TOKEN_COOKIE_NAME)?.value ?? "";
 
 const minifluxClient = new MinifluxClient(serverUrl, apiToken);
-const entries = await minifluxClient.getEntries();
+const entries = await minifluxClient.getEntries({
+    status: "unread",
+    order: "published_at",
+    direction: "desc",
+});
 const entry = entries.entries[articleId];
 
 const title = entry.title;
