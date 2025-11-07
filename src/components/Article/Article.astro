@@ -9,19 +9,99 @@ const { content } = Astro.props;
 const sanitizedContent = DOMPurify.sanitize(content);
 ---
 
-<article class="ink-article" set:html={sanitizedContent} />
+<div id="article-pagination-container">
+    <article class="ink-article" set:html={sanitizedContent} />
+</div>
+
+<script>
+    document.addEventListener("DOMContentLoaded", () => {
+        const container = document.getElementById(
+            "article-pagination-container",
+        );
+        if (!container) return;
+
+        const article = container.querySelector(".ink-article") as HTMLElement;
+        if (!article) return;
+
+        let currentPage = 0;
+        let pageWidth = window.innerWidth;
+        let totalPages = Math.ceil(article.scrollWidth / pageWidth);
+
+        const updatePage = () => {
+            article.style.transform = `translateX(-${currentPage * pageWidth}px)`;
+        };
+
+        const handleResize = () => {
+            pageWidth = window.innerWidth;
+            totalPages = Math.ceil(article.scrollWidth / pageWidth);
+            if (currentPage >= totalPages) {
+                currentPage = totalPages - 1;
+            }
+            updatePage();
+        };
+
+        const handleClick = (event: MouseEvent) => {
+            const clickX = event.clientX;
+            const screenWidth = window.innerWidth;
+
+            if (clickX < screenWidth * 0.3) {
+                // Go backward
+                if (currentPage > 0) {
+                    currentPage--;
+                    updatePage();
+                }
+            } else {
+                // Go forward
+                if (currentPage < totalPages - 1) {
+                    currentPage++;
+                    updatePage();
+                }
+            }
+        };
+
+        container.addEventListener("click", handleClick);
+        window.addEventListener("resize", handleResize);
+
+        // Initial setup
+        const startingHeight = container.getBoundingClientRect().y;
+        container.style.height = `${window.innerHeight - startingHeight - 10}px`;
+        container.style.overflow = "hidden";
+        updatePage();
+    });
+</script>
 
 <style>
+    #article-pagination-container {
+        height: calc(100vh - var(--starting-height, 0px));
+        overflow-x: scroll;
+        overflow-y: hidden;
+        scroll-snap-type: x mandatory;
+        -webkit-overflow-scrolling: touch;
+        scrollbar-width: none;
+    }
+    #article-pagination-container::-webkit-scrollbar {
+        display: none;
+    }
+
+    .ink-article {
+        height: 100%;
+        column-width: 100vw;
+        column-gap: 2rem;
+        scroll-snap-align: start;
+    }
+
     article {
         padding: 1rem;
         line-height: 1.6;
         font-size: 1rem;
         color: #000;
+        box-sizing: border-box;
     }
 
     article :global(figure) {
         margin: 0;
         max-width: 100%;
+        break-inside: avoid;
     }
 
     article :global(figcaption) {
@@ -31,10 +111,14 @@ const sanitizedContent = DOMPurify.sanitize(content);
 
     article :global(img) {
         max-width: 100%;
-        max-height: 70vh;
+        max-height: 90vh;
         height: auto;
         display: block;
         margin: 1rem auto;
+    }
+
+    article :global(p) {
+        break-inside: auto; /* Allow paragraphs to break */
     }
 
     article :global(p:first-of-type) {
@@ -44,5 +128,6 @@ const sanitizedContent = DOMPurify.sanitize(content);
     article :global(pre) {
         overflow: hidden;
         text-wrap: auto;
+        break-inside: avoid;
     }
 </style>
