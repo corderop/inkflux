@@ -1,5 +1,5 @@
 import { defineMiddleware } from "astro:middleware";
-import { MINIFLUX_API_TOKEN_COOKIE_NAME, MINIFLUX_SERVER_URL_COOKIE_NAME } from "./lib/constants";
+import { MINIFLUX_API_TOKEN_COOKIE_NAME, MINIFLUX_SERVER_URL_COOKIE_NAME } from "./config";
 
 export const PUBLIC_PATHS = [
     '/login',
