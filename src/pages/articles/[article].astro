@@ -20,7 +20,7 @@ const minifluxClient = new MinifluxClient(serverUrl, apiToken);
 const entries = await minifluxClient.getEntries({
     status: "unread",
     order: "published_at",
-    direction: "desc",
+    direction: "asc",
 });
 const entry = entries.entries[articleId];
 
