@@ -39,4 +39,9 @@ const sanitizedContent = DOMPurify.sanitize(content);
     article :global(p:first-of-type) {
         margin-top: 0;
     }
+
+    article :global(pre) {
+        overflow: hidden;
+        text-wrap: auto;
+    }
 </style>
