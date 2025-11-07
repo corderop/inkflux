@@ -6,10 +6,11 @@ interface Props {
     articleId: number;
     title: string;
     content: string;
+    feedTitle: string;
 }
 
-const { articleId, title, content } = Astro.props;
+const { articleId, title, content, feedTitle } = Astro.props;
 ---
 
-<NavBar title={title} articleId={articleId} />
+<NavBar title={title} articleId={articleId} feedTitle={feedTitle} />
 <Article content={content} />

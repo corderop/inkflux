@@ -5,9 +5,10 @@ import ForwardIcon from "../icons/ForwardIcon.astro";
 interface Props {
     title: string;
     articleId: number;
+    feedTitle: string;
 }
 
-const { title, articleId } = Astro.props;
+const { title, articleId, feedTitle } = Astro.props;
 ---
 
 <nav>
@@ -21,7 +22,7 @@ const { title, articleId } = Astro.props;
             </a>
         </li>
         <li class="nav-title">
-            <h1>{title}</h1>
+            <h1>{feedTitle} - {title}</h1>
         </li>
         <li class="nav-button">
             <a href={`/articles/${articleId + 1}`}><ForwardIcon /></a>
@@ -33,7 +34,7 @@ const { title, articleId } = Astro.props;
     nav {
         border-bottom: 1px solid #ddd;
         margin: 0;
-        padding: 0.5rem;
+        padding: 0;
         /* Make the Nav to always stay at top */
         position: sticky;
         top: 0;
@@ -41,7 +42,7 @@ const { title, articleId } = Astro.props;
     }
     ul {
         list-style-type: none;
-        padding: 0;
+        padding: 0.5rem;
         margin: 0;
         display: flex;
     }

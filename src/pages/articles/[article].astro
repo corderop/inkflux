@@ -23,11 +23,13 @@ const entries = await minifluxClient.getEntries({
     direction: "asc",
 });
 const entry = entries.entries[articleId];
-
-const title = entry.title;
-const content = entry.content;
 ---
 
 <Body>
-    <ReadPage articleId={articleId} title={title} content={content} />
+    <ReadPage
+        articleId={articleId}
+        title={entry.title}
+        content={entry.content}
+        feedTitle={entry.feed.title}
+    />
 </Body>
