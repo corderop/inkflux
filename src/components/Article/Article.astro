@@ -14,6 +14,27 @@ const sanitizedContent = DOMPurify.sanitize(content);
 </div>
 
 <script>
+    /**
+     * When the DOMContentLoaded event triggers, we execute the logic that
+     * makes the pagination works.
+     *
+     * The HTML is strucutre so we use a multi-column layout. The size of every column
+     * is the width of the viewport. We disable the scroll in the multi-column layout,
+     * and we manage by the interaction of the user, similar to the experience of
+     * reading and going through pages of a Kindle book.
+     *
+     * If the user clicks on the 70% right side of the screen, they will navigate to the
+     * next page. If they click in the 30% left side, they will go to the previous page.
+     * This is controlled by screenDivisorThreshold constant.
+     *
+     * We don't expect resize, but we have implemented a way to hanlde resize to keep
+     * the user in the same page if done. It recalculates the variables based on the new
+     * size.
+     */
+    const BACKWARD_DIRECTION = "backward";
+    const FORWARD_DIRECTION = "forward";
+    type ChangeDirection = typeof BACKWARD_DIRECTION | typeof FORWARD_DIRECTION;
+
     document.addEventListener("DOMContentLoaded", () => {
         const container = document.getElementById(
             "article-pagination-container",
@@ -27,7 +48,7 @@ const sanitizedContent = DOMPurify.sanitize(content);
         let pageWidth = window.innerWidth;
         let totalPages = Math.ceil(article.scrollWidth / pageWidth);
 
-        const updatePage = () => {
+        const moveToCurrentPage = () => {
             article.style.transform = `translateX(-${currentPage * pageWidth}px)`;
         };
 
@@ -37,65 +58,69 @@ const sanitizedContent = DOMPurify.sanitize(content);
             if (currentPage >= totalPages) {
                 currentPage = totalPages - 1;
             }
-            updatePage();
+            moveToCurrentPage();
+        };
+        window.addEventListener("resize", handleResize);
+
+        const changePage = (direction: ChangeDirection) => {
+            const pageDiff = direction == BACKWARD_DIRECTION ? -1 : 1;
+            currentPage = currentPage + pageDiff;
+            moveToCurrentPage();
         };
 
         const handleClick = (event: MouseEvent) => {
-            const clickX = event.clientX;
             const screenWidth = window.innerWidth;
+            const screenDivisorThreshold = 0.3; // 30%
+            const screenThresholdX = screenWidth * screenDivisorThreshold;
+            const clickHorizontalPosition = event.clientX;
+            const isLeftSide = clickHorizontalPosition < screenThresholdX;
+            const isRightSide = !isLeftSide;
 
-            if (clickX < screenWidth * 0.3) {
-                // Go backward
-                if (currentPage > 0) {
-                    currentPage--;
-                    updatePage();
-                }
-            } else {
-                // Go forward
-                if (currentPage < totalPages - 1) {
-                    currentPage++;
-                    updatePage();
-                }
+            if (isLeftSide && currentPage > 0) {
+                changePage(BACKWARD_DIRECTION);
+            } else if (isRightSide && currentPage < totalPages - 1) {
+                changePage(FORWARD_DIRECTION);
             }
         };
-
         container.addEventListener("click", handleClick);
-        window.addEventListener("resize", handleResize);
 
         // Initial setup
         const startingHeight = container.getBoundingClientRect().y;
         container.style.height = `${window.innerHeight - startingHeight - 10}px`;
         container.style.overflow = "hidden";
-        updatePage();
+        moveToCurrentPage();
     });
 </script>
 
 <style>
+    .ink-article {
+        --article-padding: 1rem;
+        --font-size: 1rem;
+        --line-height: 1.6;
+    }
+
     #article-pagination-container {
-        height: calc(100vh - var(--starting-height, 0px));
+        height: 100vh;
         overflow-x: scroll;
-        overflow-y: hidden;
         scroll-snap-type: x mandatory;
         -webkit-overflow-scrolling: touch;
-        scrollbar-width: none;
-    }
-    #article-pagination-container::-webkit-scrollbar {
-        display: none;
     }
 
     .ink-article {
         height: 100%;
         column-width: 100vw;
-        column-gap: 2rem;
+        column-gap: calc(var(--article-padding) * 2);
         scroll-snap-align: start;
     }
 
     article {
-        padding: 1rem;
-        line-height: 1.6;
-        font-size: 1rem;
-        color: #000;
+        /* sizing */
+        padding: var(--article-padding);
         box-sizing: border-box;
+        /* Text styles */
+        line-height: var(--line-height);
+        font-size: var(--font-size);
+        color: #000;
     }
 
     article :global(figure) {
@@ -111,6 +136,7 @@ const sanitizedContent = DOMPurify.sanitize(content);
 
     article :global(img) {
         max-width: 100%;
+        /* Avoid horizontal pictures to be larger than the screen */
         max-height: 90vh;
         height: auto;
         display: block;
@@ -118,7 +144,8 @@ const sanitizedContent = DOMPurify.sanitize(content);
     }
 
     article :global(p) {
-        break-inside: auto; /* Allow paragraphs to break */
+        /* Allow paragraphs to break, between pages */
+        break-inside: auto;
     }
 
     article :global(p:first-of-type) {
