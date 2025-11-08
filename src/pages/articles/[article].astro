@@ -2,26 +2,58 @@
 export const prerender = false;
 import ReadPage from "../../containers/ReadPage.astro";
 import Body from "../../layouts/Body.astro";
-import {
-    MINIFLUX_SERVER_URL_COOKIE_NAME,
-    MINIFLUX_API_TOKEN_COOKIE_NAME,
-} from "../../config";
 import { MinifluxClient } from "../../lib/miniflux-client";
+import AstroCookiesManager from "../../lib/astro-cookies-manager";
+import {
+    MinifluxAuthError,
+    MinifluxBadRequestError,
+    MinifluxNotFoundError,
+} from "../../lib/miniflux-client/errors";
 
 const { article } = Astro.params;
 
-const articleId = Number(article) ?? 0;
+const articleId = Number(article);
+if (isNaN(articleId)) {
+    return Astro.rewrite("/404");
+}
 
-const serverUrl =
-    Astro.cookies.get(MINIFLUX_SERVER_URL_COOKIE_NAME)?.value ?? "";
-const apiToken = Astro.cookies.get(MINIFLUX_API_TOKEN_COOKIE_NAME)?.value ?? "";
+let url, apiToken;
+try {
+    const cookieManager = new AstroCookiesManager(Astro.cookies);
+    ({ url, apiToken } = cookieManager.getMinifluxSessionCookies());
+} catch (error) {
+    return Astro.redirect("/login");
+}
 
-const minifluxClient = new MinifluxClient(serverUrl, apiToken);
-const entries = await minifluxClient.getEntries({
-    status: "unread",
-    order: "published_at",
-    direction: "asc",
-});
+// TODO: To implement pagination in #23
+const minifluxClient = new MinifluxClient(url, apiToken);
+let entries;
+try {
+    entries = await minifluxClient.getEntries({
+        status: "unread",
+        order: "published_at",
+        direction: "asc",
+    });
+} catch (error) {
+    if (error instanceof MinifluxAuthError) {
+        // TODO: Redirect to logout endpoint when implemented #5
+        return Astro.rewrite("/login");
+    } else if (error instanceof MinifluxBadRequestError) {
+        return Astro.rewrite("/400");
+    } else if (error instanceof MinifluxNotFoundError) {
+        return Astro.rewrite("/404");
+    } else {
+        return Astro.rewrite("/500");
+    }
+}
+
+const totalEntries = entries.entries.length;
+const isFirstArticle = articleId === 0;
+const isLastArticle = articleId === totalEntries - 1;
+if (articleId < 0 || articleId >= totalEntries) {
+    return Astro.rewrite("/404");
+}
+
 const entry = entries.entries[articleId];
 ---
 
@@ -29,7 +61,9 @@ const entry = entries.entries[articleId];
     <ReadPage
         articleId={articleId}
         title={entry.title}
-        content={entry.content}
         feedTitle={entry.feed.title}
+        isFirstArticle={isFirstArticle}
+        isLastArticle={isLastArticle}
+        content={entry.content}
     />
 </Body>

@@ -5,17 +5,20 @@ import NavBar from "../components/NavBar/NavBar.astro";
 interface Props {
     articleId: number;
     title: string;
-    content: string;
     feedTitle: string;
+    isFirstArticle: boolean;
+    isLastArticle: boolean;
+    content: string;
 }
 
-const { articleId, title, content, feedTitle } = Astro.props;
+const { articleId, title, feedTitle, isFirstArticle, isLastArticle, content } =
+    Astro.props;
 ---
 
 <NavBar
     title={title}
     feedTitle={feedTitle}
-    previousArticleUrl={articleId > 0 ? `/articles/${articleId - 1}` : null}
-    nextArticleUrl={`/articles/${articleId + 1}`}
+    previousArticleUrl={!isFirstArticle ? `/articles/${articleId - 1}` : null}
+    nextArticleUrl={!isLastArticle ? `/articles/${articleId + 1}` : null}
 />
 <Article content={content} />
