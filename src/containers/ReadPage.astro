@@ -12,5 +12,10 @@ interface Props {
 const { articleId, title, content, feedTitle } = Astro.props;
 ---
 
-<NavBar title={title} articleId={articleId} feedTitle={feedTitle} />
+<NavBar
+    title={title}
+    feedTitle={feedTitle}
+    previousArticleUrl={articleId > 0 ? `/article/${articleId - 1}` : null}
+    nextArticleUrl={`/article/${articleId + 1}`}
+/>
 <Article content={content} />

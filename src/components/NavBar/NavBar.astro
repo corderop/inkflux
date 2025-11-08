@@ -2,21 +2,34 @@
 import BackwardIcon from "../icons/BackwardIcon.astro";
 import ForwardIcon from "../icons/ForwardIcon.astro";
 
+/**
+ * @typedef {object} Props
+ * @property {string} title - The title of the current article.
+ * @property {string} feedTitle - The title of the feed the article belongs to.
+ * @property {string | null} previousArticleUrl - The URL of the previous article, or null if there isn't one.
+ * @property {string | null} nextArticleUrl - The URL of the next article, or null if there isn't one.
+ */
 interface Props {
     title: string;
-    articleId: number;
     feedTitle: string;
+    previousArticleUrl: string | null;
+    nextArticleUrl: string | null;
 }
 
-const { title, articleId, feedTitle } = Astro.props;
+/**
+ * NavBar component displays a navigation bar with the current article's title,
+ * its feed's title, and navigation buttons for the previous and next articles.
+ * The navigation buttons are disabled if there is no previous or next article.
+ */
+const { title, feedTitle, previousArticleUrl, nextArticleUrl } = Astro.props;
 ---
 
 <nav>
     <ul>
         <li class="nav-button">
             <a
-                href={articleId > 0 ? `/articles/${articleId - 1}` : null}
-                class={articleId == 0 ? "disabled" : ""}
+                href={previousArticleUrl}
+                class={Boolean(previousArticleUrl) ? "" : "disabled"}
             >
                 <BackwardIcon />
             </a>
@@ -25,7 +38,12 @@ const { title, articleId, feedTitle } = Astro.props;
             <h1>{feedTitle} - {title}</h1>
         </li>
         <li class="nav-button">
-            <a href={`/articles/${articleId + 1}`}><ForwardIcon /></a>
+            <a
+                href={nextArticleUrl}
+                class={Boolean(nextArticleUrl) ? "" : "disabled"}
+            >
+                <ForwardIcon />
+            </a>
         </li>
     </ul>
 </nav>
