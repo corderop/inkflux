@@ -1,4 +1,24 @@
-<form method="POST" action="/api/login">
+---
+/**
+ * @typedef {object} Props
+ * @property {string} method - The HTTP method for the form submission (e.g., "POST").
+ * @property {string} action - The URL to which the form data will be submitted.
+ */
+interface Props {
+    method: string;
+    action: string;
+}
+
+/**
+ * LoginForm component provides a form for users to log in.
+ * It includes input fields for the Miniflux Server URL and an API Token,
+ * and a submit button. The form's submission method and action URL are
+ * configurable via props.
+ */
+const { method, action } = Astro.props;
+---
+
+<form method={method} action={action}>
     <label for="server">
         Miniflux Server URL
         <input
