@@ -35,6 +35,7 @@ try {
         direction: "asc",
     });
 } catch (error) {
+    console.log(error);
     if (error instanceof MinifluxAuthError) {
         // TODO: Redirect to logout endpoint when implemented #5
         return Astro.rewrite("/login");
