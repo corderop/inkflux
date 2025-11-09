@@ -1,4 +1,4 @@
-import type { EntriesResponse, Entry } from '../types';
+import type { EntriesResponse, Entry, User } from '../types';
 
 export const mockEntries: EntriesResponse = {
   total: 1,
@@ -52,4 +52,22 @@ export const mockEntries: EntriesResponse = {
       tags: [],
     },
   ],
+};
+
+export const mockUser: User = {
+  id: 1,
+  username: 'testuser',
+  is_admin: true,
+  theme: 'dark',
+  language: 'en_US',
+  timezone: 'UTC',
+  entry_sorting_direction: 'desc',
+  stylesheet: 'default',
+  google_id: '',
+  openid_connect_id: '',
+  entries_per_page: 50,
+  keyboard_shortcuts: true,
+  show_reading_time: true,
+  entry_swipe: true,
+  last_login_at: '2023-11-09T12:00:00Z',
 };

@@ -7,7 +7,7 @@ import {
   MinifluxNotFoundError,
   MinifluxServerError,
 } from '../errors';
-import { mockEntries } from './mocks';
+import { mockEntries, mockUser } from './mocks';
 
 function mockFetch({ statusCode, json }: { statusCode: number, json: object }) {
   return vi.spyOn(global, 'fetch').mockImplementationOnce(
@@ -146,6 +146,35 @@ describe('MinifluxClient', () => {
       mockFetch({ statusCode: 418, json: {} });
       const client = new MinifluxClient(fakeUrl, fakeToken);
       await expect(client.getEntries()).rejects.toThrow(MinifluxError);
+    });
+  });
+
+  describe("getCurrentUser", () => {
+    it("should call the proper URL", async () => {
+      const fetchSpy = mockFetch({
+        statusCode: 200,
+        json: mockUser
+      });
+
+      const client = new MinifluxClient(fakeUrl, fakeToken);
+      await client.getCurrentUser();
+
+      expect(fetchSpy).toHaveBeenCalledWith(
+        `${fakeUrl}/v1/me`,
+        expect.any(Object),
+      );
+    });
+
+    it("should return proper data", async () => {
+      mockFetch({
+        statusCode: 200,
+        json: mockUser
+      });
+
+      const client = new MinifluxClient(fakeUrl, fakeToken);
+      const user = await client.getCurrentUser();
+
+      expect(user).toBe(mockUser);
     });
   });
 });

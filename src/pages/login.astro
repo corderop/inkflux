@@ -1,8 +1,10 @@
 ---
 import Body from "../layouts/Body.astro";
 import LoginContainer from "../containers/LoginContainer.astro";
+
+const error = Astro.url.searchParams.get("error");
 ---
 
 <Body>
-    <LoginContainer />
+    <LoginContainer hasError={Boolean(error)} />
 </Body>

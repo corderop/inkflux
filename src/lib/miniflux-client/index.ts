@@ -5,7 +5,7 @@ import {
   MinifluxNotFoundError,
   MinifluxServerError,
 } from "./errors";
-import type { EntriesResponse, GetEntriesFilters } from "./types";
+import type { EntriesResponse, GetEntriesFilters, User } from "./types";
 
 type QueryParams = { [key: string]: string | number | boolean };
 
@@ -117,5 +117,21 @@ export class MinifluxClient {
    */
   public async getEntries(filters: GetEntriesFilters = {}): Promise<EntriesResponse> {
     return this.fetch<EntriesResponse>({ path: '/v1/entries', queryParams: filters });
+  }
+
+  /**
+   * Retrieves the current user's information from the Miniflux API.
+   * 
+   * @returns {Promise<User>} The current user's information.
+   * 
+   * @throws {MinifluxAuthError} When authentication fails (401, 403).
+   * @throws {MinifluxBadRequestError} When the request is malformed (400).
+   * @throws {MinifluxNotFoundError} When the requested resource is not found (404).
+   * @throws {MinifluxServerError} When the server returns an error (5xx).
+   * @throws {MinifluxError} For any other non-ok response.
+   * @see https://miniflux.app/docs/api.html#endpoint-me
+   */
+  public async getCurrentUser(): Promise<User> {
+    return this.fetch<User>({ path: '/v1/me' });
   }
 }

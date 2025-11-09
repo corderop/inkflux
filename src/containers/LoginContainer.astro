@@ -1,5 +1,11 @@
 ---
 import LoginForm from "../components/LoginForm/LoginForm.astro";
+
+interface Props {
+    hasError: boolean;
+}
+
+const { hasError } = Astro.props;
 ---
 
-<LoginForm method="POST" action="/api/login" />
+<LoginForm method="POST" action="/api/login" hasError={hasError} />

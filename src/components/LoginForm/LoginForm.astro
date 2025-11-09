@@ -1,4 +1,6 @@
 ---
+import ErrorMessage from "../ErrorMessage/ErrorMessage.astro";
+
 /**
  * @typedef {object} Props
  * @property {string} method - The HTTP method for the form submission (e.g., "POST").
@@ -7,6 +9,7 @@
 interface Props {
     method: string;
     action: string;
+    hasError: boolean;
 }
 
 /**
@@ -15,10 +18,12 @@ interface Props {
  * and a submit button. The form's submission method and action URL are
  * configurable via props.
  */
-const { method, action } = Astro.props;
+const { method, action, hasError } = Astro.props;
+const errorId = "login-error-message";
 ---
 
 <form method={method} action={action}>
+    {hasError && <ErrorMessage id={errorId} />}
     <label for="server">
         Miniflux Server URL
         <input
@@ -27,6 +32,8 @@ const { method, action } = Astro.props;
             placeholder="https://miniflux.example.com/"
             autocomplete="url"
             required
+            aria-invalid={hasError ? "true" : "false"}
+            aria-describedby={hasError ? errorId : undefined}
         />
     </label>
 
@@ -38,6 +45,8 @@ const { method, action } = Astro.props;
             type="password"
             autocomplete="current-password"
             required
+            aria-invalid={hasError ? "true" : "false"}
+            aria-describedby={hasError ? errorId : undefined}
         />
     </label>
 
@@ -48,7 +57,7 @@ const { method, action } = Astro.props;
     form {
         display: flex;
         flex-direction: column;
-        width: 15rem;
+        width: 20rem;
         gap: 1rem;
         padding: 1rem;
         margin: 1rem auto;

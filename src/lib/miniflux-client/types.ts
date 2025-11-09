@@ -56,6 +56,24 @@ export interface EntriesResponse {
   entries: Entry[];
 }
 
+export interface User {
+  id: number;
+  username: string;
+  is_admin: boolean;
+  theme: string;
+  language: string;
+  timezone: string;
+  entry_sorting_direction: string;
+  stylesheet: string;
+  google_id: string;
+  openid_connect_id: string
+  entries_per_page: number;
+  keyboard_shortcuts: boolean;
+  show_reading_time: boolean;
+  entry_swipe: boolean;
+  last_login_at: string;
+}
+
 type Status = 'read' | 'unread' | 'removed';
 type GetEntriesOrder = 'id' | 'status' | 'published_at' | 'category_title' | 'category_id';
 type OrderDirection = 'asc' | 'desc';
