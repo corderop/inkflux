@@ -1,0 +1,7 @@
+{
+  "*.{js,mjs,ts,astro,json,md,yaml,yml,svg}": [
+    "pnpm format:file",
+    "pnpm lint:fix:file"
+  ],
+  ".*": ["pnpm format:file", "pnpm lint:fix:file"]
+}
