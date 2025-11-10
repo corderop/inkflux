@@ -1,3 +1,3 @@
-class AstroCookiesError extends Error { }
+class AstroCookiesError extends Error {}
 
-export class AstroCookiesNotFound extends AstroCookiesError { }
+export class AstroCookiesNotFound extends AstroCookiesError {}

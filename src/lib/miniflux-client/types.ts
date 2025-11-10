@@ -66,7 +66,7 @@ export interface User {
   entry_sorting_direction: string;
   stylesheet: string;
   google_id: string;
-  openid_connect_id: string
+  openid_connect_id: string;
   entries_per_page: number;
   keyboard_shortcuts: boolean;
   show_reading_time: boolean;
@@ -74,9 +74,14 @@ export interface User {
   last_login_at: string;
 }
 
-type Status = 'read' | 'unread' | 'removed';
-type GetEntriesOrder = 'id' | 'status' | 'published_at' | 'category_title' | 'category_id';
-type OrderDirection = 'asc' | 'desc';
+type Status = "read" | "unread" | "removed";
+type GetEntriesOrder =
+  | "id"
+  | "status"
+  | "published_at"
+  | "category_title"
+  | "category_id";
+type OrderDirection = "asc" | "desc";
 
 export type GetEntriesFilters = {
   status?: Status;

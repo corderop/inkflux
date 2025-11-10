@@ -1,4 +1,4 @@
 export interface SessionCookies {
-    url: string
-    apiToken: string
+  url: string;
+  apiToken: string;
 }

@@ -36,9 +36,9 @@ export class MinifluxClient {
    * @param {string} params.path The API path to request.
    * @param {RequestInit} [params.options={}] Additional fetch options.
    * @param {QueryParams} [params.queryParams={}] Query parameters for the request.
-   * 
+   *
    * @returns {Promise<T>} The JSON response from the API.
-   * 
+   *
    * @throws {MinifluxAuthError} When authentication fails (401, 403).
    * @throws {MinifluxBadRequestError} When the request is malformed (400).
    * @throws {MinifluxNotFoundError} When the requested resource is not found (404).
@@ -98,16 +98,16 @@ export class MinifluxClient {
 
   private getAuthorizationHeaders(): { [key: string]: string } {
     return {
-      'X-Auth-Token': this.token
-    }
+      "X-Auth-Token": this.token,
+    };
   }
 
   /**
    * Retrieves a list of entries from the Miniflux API.
    * @param {GetEntriesFilters} [filters={}] Filters to apply to the request.
-   * 
+   *
    * @returns {Promise<EntriesResponse>} The response from the API.
-   * 
+   *
    * @throws {MinifluxAuthError} When authentication fails (401, 403).
    * @throws {MinifluxBadRequestError} When the request is malformed (400).
    * @throws {MinifluxNotFoundError} When the requested resource is not found (404).
@@ -115,15 +115,20 @@ export class MinifluxClient {
    * @throws {MinifluxError} For any other non-ok response.
    * @see https://miniflux.app/docs/api.html#get-entries
    */
-  public async getEntries(filters: GetEntriesFilters = {}): Promise<EntriesResponse> {
-    return this.fetch<EntriesResponse>({ path: '/v1/entries', queryParams: filters });
+  public async getEntries(
+    filters: GetEntriesFilters = {},
+  ): Promise<EntriesResponse> {
+    return this.fetch<EntriesResponse>({
+      path: "/v1/entries",
+      queryParams: filters,
+    });
   }
 
   /**
    * Retrieves the current user's information from the Miniflux API.
-   * 
+   *
    * @returns {Promise<User>} The current user's information.
-   * 
+   *
    * @throws {MinifluxAuthError} When authentication fails (401, 403).
    * @throws {MinifluxBadRequestError} When the request is malformed (400).
    * @throws {MinifluxNotFoundError} When the requested resource is not found (404).
@@ -132,6 +137,6 @@ export class MinifluxClient {
    * @see https://miniflux.app/docs/api.html#endpoint-me
    */
   public async getCurrentUser(): Promise<User> {
-    return this.fetch<User>({ path: '/v1/me' });
+    return this.fetch<User>({ path: "/v1/me" });
   }
 }
