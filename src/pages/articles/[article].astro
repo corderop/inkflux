@@ -35,10 +35,8 @@ try {
     direction: "asc",
   });
 } catch (error) {
-  console.log(error);
   if (error instanceof MinifluxAuthError) {
-    // TODO: Redirect to logout endpoint when implemented #5
-    return Astro.rewrite("/login");
+    return Astro.rewrite("/api/logout");
   } else if (error instanceof MinifluxBadRequestError) {
     return Astro.rewrite("/400");
   } else if (error instanceof MinifluxNotFoundError) {

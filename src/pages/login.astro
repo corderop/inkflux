@@ -1,8 +1,22 @@
 ---
 import Body from "../layouts/Body.astro";
 import LoginContainer from "../containers/LoginContainer.astro";
+import AstroCookiesManager from "../lib/astro-cookies-manager";
+
+function isUserAlreadyLogged() {
+  const cookieManager = new AstroCookiesManager(Astro.cookies);
+  try {
+    const { url, apiToken } = cookieManager.getMinifluxSessionCookies();
+    return url && apiToken;
+  } catch {
+    return false;
+  }
+}
 
 const error = Astro.url.searchParams.get("error");
+if (isUserAlreadyLogged()) {
+  return Astro.redirect("/articles/0");
+}
 ---
 
 <Body>
