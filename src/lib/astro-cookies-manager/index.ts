@@ -40,4 +40,19 @@ export default class AstroCookiesManager {
       maxAge: AUTHENTICATION_EXPIRATION_TIME_SECONDS,
     });
   }
+
+  deleteMinifluxSessionCookies() {
+    this.cookies.delete(MINIFLUX_SERVER_URL_COOKIE_NAME, {
+      path: "/",
+      httpOnly: true,
+      secure: import.meta.env.PROD,
+      sameSite: "strict",
+    });
+    this.cookies.delete(MINIFLUX_API_TOKEN_COOKIE_NAME, {
+      path: "/",
+      httpOnly: true,
+      secure: import.meta.env.PROD,
+      sameSite: "strict",
+    });
+  }
 }

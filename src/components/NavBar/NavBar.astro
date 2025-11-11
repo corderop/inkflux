@@ -1,6 +1,7 @@
 ---
 import BackwardIcon from "../icons/BackwardIcon.astro";
 import ForwardIcon from "../icons/ForwardIcon.astro";
+import Logout from "../icons/Logout.astro";
 
 /**
  * @typedef {object} Props
@@ -37,6 +38,11 @@ const { title, feedTitle, previousArticleUrl, nextArticleUrl } = Astro.props;
     <li class="nav-button">
       <a href={nextArticleUrl} class={nextArticleUrl ? "" : "disabled"}>
         <ForwardIcon />
+      </a>
+    </li>
+    <li class="nav-button">
+      <a href="/api/logout">
+        <Logout />
       </a>
     </li>
   </ul>
@@ -81,6 +87,7 @@ const { title, feedTitle, previousArticleUrl, nextArticleUrl } = Astro.props;
     flex-shrink: 0;
     height: 20px;
     width: 20px;
+    margin: 0 0.2rem;
   }
   .nav-button a {
     color: #000;
