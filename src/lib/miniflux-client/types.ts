@@ -74,7 +74,7 @@ export interface User {
   last_login_at: string;
 }
 
-type Status = "read" | "unread" | "removed";
+export type EntryStatus = "read" | "unread" | "removed";
 type GetEntriesOrder =
   | "id"
   | "status"
@@ -84,7 +84,7 @@ type GetEntriesOrder =
 type OrderDirection = "asc" | "desc";
 
 export type GetEntriesFilters = {
-  status?: Status;
+  status?: EntryStatus;
   offset?: number;
   limit?: number;
   order?: GetEntriesOrder;

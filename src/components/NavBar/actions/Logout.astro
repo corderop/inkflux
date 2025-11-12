@@ -1,0 +1,14 @@
+---
+import LogoutIcon from "../../icons/LogoutIcon.astro";
+import IconLink from "../templates/IconLink.astro";
+
+interface Props {
+  url: string | null;
+}
+
+const { url } = Astro.props;
+---
+
+<IconLink url={url}>
+  <LogoutIcon />
+</IconLink>

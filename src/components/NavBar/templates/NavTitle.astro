@@ -1,0 +1,32 @@
+---
+interface Props {
+  title: string;
+}
+
+const { title } = Astro.props;
+---
+
+<li class="nav-title">
+  <h1>{title}</h1>
+</li>
+
+<style>
+  .nav-title {
+    flex-grow: 1;
+    flex-shrink: 1;
+    margin: 0 1rem;
+    overflow: hidden;
+  }
+  .nav-title h1 {
+    margin: 0;
+    /* Text styles */
+    font-size: 0.85rem;
+    text-align: center;
+    font-weight: bold;
+    line-height: 20px;
+    /* Overflow title will be hidden behind ... */
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+  }
+</style>

@@ -1,4 +1,4 @@
-import { describe, it, expect, vi } from "vitest";
+import { describe, it, expect, vi, afterEach } from "vitest";
 import { MinifluxClient } from "..";
 import {
   MinifluxAuthError,
@@ -9,12 +9,38 @@ import {
 } from "../errors";
 import { mockEntries, mockUser } from "./mocks";
 
-function mockFetch({ statusCode, json }: { statusCode: number; json: object }) {
+const createMockStream = (data: object): ReadableStream<Uint8Array> => {
+  const encoder = new TextEncoder();
+  const encodedData = encoder.encode(JSON.stringify(data));
+
+  return new ReadableStream({
+    start(controller) {
+      controller.enqueue(encodedData);
+      controller.close();
+    },
+  });
+};
+
+function mockFetch({
+  statusCode,
+  json,
+}: {
+  statusCode: number;
+  json: object | null;
+}) {
+  const mockedJsonFunctionOnValidJson = async () => json;
+  const mockedJsonFunctionOnInvalidJson = async () => {
+    throw new Error("Invalid JSON");
+  };
+
   return vi.spyOn(global, "fetch").mockImplementationOnce(() =>
     Promise.resolve({
       ok: statusCode >= 200 && statusCode < 300,
       status: statusCode,
-      json: async () => json,
+      body: json ? createMockStream(json) : null,
+      json: json
+        ? mockedJsonFunctionOnValidJson
+        : mockedJsonFunctionOnInvalidJson,
     } as Response),
   );
 }
@@ -22,6 +48,10 @@ function mockFetch({ statusCode, json }: { statusCode: number; json: object }) {
 describe("MinifluxClient", () => {
   const fakeToken = "ZmFzZGZhZGZ3ZXIzNDI0MzI0MjM0MjM0MjM0MjM";
   const fakeUrl = "https://example.com";
+
+  afterEach(() => {
+    vi.clearAllMocks();
+  });
 
   it("should add the X-Auth-Token header for authentication", async () => {
     const fetchSpy = mockFetch({
@@ -107,6 +137,57 @@ describe("MinifluxClient", () => {
       expect(fetchSpy).toHaveBeenCalledWith(
         `${fakeUrl}/v1/entries?status=read&offset=1&limit=10&order=status&direction=asc`,
         expect.any(Object),
+      );
+    });
+  });
+
+  describe("changeEntryStatus", () => {
+    it("should call the proper URL", async () => {
+      const fetchSpy = mockFetch({
+        statusCode: 204,
+        json: null,
+      });
+
+      const client = new MinifluxClient(fakeUrl, fakeToken);
+      await client.changeEntryStatus(123, "read");
+
+      expect(fetchSpy).toHaveBeenCalledWith(
+        `${fakeUrl}/v1/entries`,
+        expect.any(Object),
+      );
+    });
+
+    it("should use put PUT", async () => {
+      const fetchSpy = mockFetch({
+        statusCode: 204,
+        json: null,
+      });
+
+      const client = new MinifluxClient(fakeUrl, fakeToken);
+      await client.changeEntryStatus(123, "read");
+
+      expect(fetchSpy).toHaveBeenCalledWith(
+        expect.any(String),
+        expect.objectContaining({
+          method: "PUT",
+        }),
+      );
+    });
+
+    it("should send the proper body", async () => {
+      const fetchSpy = mockFetch({
+        statusCode: 204,
+        json: null,
+      });
+
+      const client = new MinifluxClient(fakeUrl, fakeToken);
+      await client.changeEntryStatus(123, "read");
+
+      expect(fetchSpy).toHaveBeenCalledWith(
+        expect.any(String),
+        expect.objectContaining({
+          body: JSON.stringify({ entry_ids: [123], status: "read" }),
+        }),
       );
     });
   });

@@ -1,0 +1,14 @@
+---
+import ForwardIcon from "../../icons/ForwardIcon.astro";
+import IconLink from "../templates/IconLink.astro";
+
+interface Props {
+  url: string | null;
+}
+
+const { url } = Astro.props;
+---
+
+<IconLink url={url}>
+  <ForwardIcon />
+</IconLink>

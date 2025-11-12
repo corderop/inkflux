@@ -12,8 +12,8 @@ import {
 
 const { article } = Astro.params;
 
-const articleId = Number(article);
-if (isNaN(articleId)) {
+const articleNumber = Number(article);
+if (isNaN(articleNumber)) {
   return Astro.rewrite("/404");
 }
 
@@ -47,22 +47,24 @@ try {
 }
 
 const totalEntries = entries.entries.length;
-const isFirstArticle = articleId === 0;
-const isLastArticle = articleId === totalEntries - 1;
-if (articleId < 0 || articleId >= totalEntries) {
+const isFirstArticle = articleNumber === 0;
+const isLastArticle = articleNumber === totalEntries - 1;
+if (articleNumber < 0 || articleNumber >= totalEntries) {
   return Astro.rewrite("/404");
 }
 
-const entry = entries.entries[articleId];
+const entry = entries.entries[articleNumber];
 ---
 
 <Body>
   <ReadPage
-    articleId={articleId}
+    articleNumber={articleNumber}
+    entryId={entry.id}
     title={entry.title}
     feedTitle={entry.feed.title}
     isFirstArticle={isFirstArticle}
     isLastArticle={isLastArticle}
     content={entry.content}
+    isArticleUnread={entry.status === "unread"}
   />
 </Body>

@@ -1,0 +1,102 @@
+---
+import Eye from "../../icons/eye/Eye.astro";
+import EyeSlash from "../../icons/eye/EyeSlash.astro";
+
+interface Props {
+  entryId: number;
+  isUnread: boolean;
+}
+
+const { entryId, isUnread } = Astro.props;
+---
+
+<button
+  id="mark-as-read"
+  style={!isUnread ? `display: none` : ""}
+  data-entryid={entryId}
+>
+  <Eye />
+</button>
+<button
+  id="mark-as-unread"
+  style={isUnread ? `display: none` : ""}
+  data-entryid={entryId}
+>
+  <EyeSlash />
+</button>
+
+<style>
+  button {
+    background: none;
+    color: inherit;
+    border: none;
+    padding: 0;
+    font: inherit;
+    cursor: pointer;
+    outline: inherit;
+    width: 100%;
+    height: 100%;
+  }
+
+  button:hover {
+    cursor: pointer;
+  }
+</style>
+
+<script>
+  import type { EntryStatus } from "../../../lib/miniflux-client/types";
+
+  const markAsReadButton = document.getElementById("mark-as-read");
+  const markAsUnreadButton = document.getElementById("mark-as-unread");
+
+  if (markAsReadButton && markAsUnreadButton) {
+    markAsReadButton.addEventListener("click", async () => {
+      const entryId = markAsReadButton.dataset.entryid ?? "";
+      if (!entryId) return;
+      await changeStatusTo(entryId, "read");
+    });
+
+    markAsUnreadButton.addEventListener("click", async () => {
+      const entryId = markAsReadButton.dataset.entryid ?? "";
+      if (!entryId) return;
+      await changeStatusTo(entryId, "unread");
+    });
+  }
+
+  function toggleButtonTo(status: EntryStatus) {
+    if (!markAsReadButton || !markAsUnreadButton) {
+      return;
+    }
+
+    if (status === "unread") {
+      markAsReadButton.style.display = "none";
+      markAsUnreadButton.style.display = "block";
+    } else {
+      markAsReadButton.style.display = "block";
+      markAsUnreadButton.style.display = "none";
+    }
+  }
+
+  async function makeChangeStatusRequest(entryId: string, status: EntryStatus) {
+    const response = await fetch(`/api/entries/${entryId}/change-status`, {
+      method: "PUT",
+      body: JSON.stringify({ status }),
+    });
+
+    if (!response.ok) {
+      throw new Error("Error while changing status");
+    }
+  }
+
+  async function changeStatusTo(entryId: string, status: EntryStatus) {
+    const oppositeStatus: EntryStatus = status === "read" ? "unread" : "read";
+
+    toggleButtonTo(oppositeStatus);
+
+    try {
+      await makeChangeStatusRequest(entryId, status);
+    } catch {
+      toggleButtonTo(status);
+    }
+  }
+</script>

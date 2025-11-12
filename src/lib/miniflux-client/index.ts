@@ -5,7 +5,12 @@ import {
   MinifluxNotFoundError,
   MinifluxServerError,
 } from "./errors";
-import type { EntriesResponse, GetEntriesFilters, User } from "./types";
+import type {
+  EntriesResponse,
+  EntryStatus,
+  GetEntriesFilters,
+  User,
+} from "./types";
 
 type QueryParams = { [key: string]: string | number | boolean };
 
@@ -82,7 +87,7 @@ export class MinifluxClient {
       }
     }
 
-    return response.json();
+    return response.body ? response.json() : (undefined as T);
   }
 
   private getQueryParamsString(queryParams: QueryParams): string {
@@ -138,5 +143,30 @@ export class MinifluxClient {
    */
   public async getCurrentUser(): Promise<User> {
     return this.fetch<User>({ path: "/v1/me" });
+  }
+
+  /**
+   * Change the status of an specific entry.
+   *
+   * @returns {Promise<void>}
+   *
+   * @throws {MinifluxAuthError} When authentication fails (401, 403).
+   * @throws {MinifluxBadRequestError} When the request is malformed (400).
+   * @throws {MinifluxNotFoundError} When the entry is not found (404).
+   * @throws {MinifluxServerError} When the server returns an error (5xx).
+   * @throws {MinifluxError} For any other non-ok response.
+   * @see https://miniflux.app/docs/api.html#endpoint-update-entry
+   */
+  public async changeEntryStatus(
+    entryId: number,
+    status: EntryStatus,
+  ): Promise<void> {
+    await this.fetch<void>({
+      path: "/v1/entries",
+      options: {
+        method: "PUT",
+        body: JSON.stringify({ entry_ids: [entryId], status }),
+      },
+    });
   }
 }

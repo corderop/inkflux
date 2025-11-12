@@ -1,50 +1,49 @@
 ---
-import BackwardIcon from "../icons/BackwardIcon.astro";
-import ForwardIcon from "../icons/ForwardIcon.astro";
-import Logout from "../icons/Logout.astro";
+import MarkAsRead from "./actions/MarkAsRead.astro";
+import PreviousArticle from "./actions/PreviousArticle.astro";
+import NextArticle from "./actions/NextArticle.astro";
+import Logout from "./actions/Logout.astro";
+import NavButton from "./templates/NavButton.astro";
+import NavTitle from "./templates/NavTitle.astro";
 
-/**
- * @typedef {object} Props
- * @property {string} title - The title of the current article.
- * @property {string} feedTitle - The title of the feed the article belongs to.
- * @property {string | null} previousArticleUrl - The URL of the previous article, or null if there isn't one.
- * @property {string | null} nextArticleUrl - The URL of the next article, or null if there isn't one.
- */
 interface Props {
+  entryId: number;
   title: string;
   feedTitle: string;
   previousArticleUrl: string | null;
   nextArticleUrl: string | null;
+  isUnread: boolean;
 }
 
-/**
- * NavBar component displays a navigation bar with the current article's title,
- * its feed's title, and navigation buttons for the previous and next articles.
- * The navigation buttons are disabled if there is no previous or next article.
- */
-const { title, feedTitle, previousArticleUrl, nextArticleUrl } = Astro.props;
+const {
+  entryId,
+  title,
+  feedTitle,
+  previousArticleUrl,
+  nextArticleUrl,
+  isUnread,
+} = Astro.props;
 ---
 
 <nav>
   <ul>
-    <li class="nav-button">
-      <a href={previousArticleUrl} class={previousArticleUrl ? "" : "disabled"}>
-        <BackwardIcon />
-      </a>
-    </li>
-    <li class="nav-title">
-      <h1>{feedTitle} - {title}</h1>
-    </li>
-    <li class="nav-button">
-      <a href={nextArticleUrl} class={nextArticleUrl ? "" : "disabled"}>
-        <ForwardIcon />
-      </a>
-    </li>
-    <li class="nav-button">
-      <a href="/api/logout">
-        <Logout />
-      </a>
-    </li>
+    <NavButton>
+      <MarkAsRead entryId={entryId} isUnread={isUnread} />
+    </NavButton>
+
+    <NavButton>
+      <PreviousArticle url={previousArticleUrl} />
+    </NavButton>
+
+    <NavTitle title={`${feedTitle} - ${title}`} />
+
+    <NavButton>
+      <NextArticle url={nextArticleUrl} />
+    </NavButton>
+
+    <NavButton>
+      <Logout url="/api/logout" />
+    </NavButton>
   </ul>
 </nav>
 
@@ -63,38 +62,5 @@ const { title, feedTitle, previousArticleUrl, nextArticleUrl } = Astro.props;
     padding: 0.5rem;
     margin: 0;
     display: flex;
-  }
-  .nav-title {
-    flex-grow: 1;
-    flex-shrink: 1;
-    margin: 0 1rem;
-    overflow: hidden;
-  }
-  .nav-title h1 {
-    margin: 0;
-    /* Text styles */
-    font-size: 0.85rem;
-    text-align: center;
-    font-weight: bold;
-    line-height: 20px;
-    /* Overflow title will be hidden behind ... */
-    overflow: hidden;
-    white-space: nowrap;
-    text-overflow: ellipsis;
-  }
-  .nav-button {
-    flex-grow: 0;
-    flex-shrink: 0;
-    height: 20px;
-    width: 20px;
-    margin: 0 0.2rem;
-  }
-  .nav-button a {
-    color: #000;
-    text-decoration: none;
-  }
-
-  .nav-button a.disabled {
-    color: #fff;
   }
 </style>

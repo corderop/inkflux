@@ -1,0 +1,14 @@
+---
+import BackwardIcon from "../../icons/BackwardIcon.astro";
+import IconLink from "../templates/IconLink.astro";
+
+interface Props {
+  url: string | null;
+}
+
+const { url } = Astro.props;
+---
+
+<IconLink url={url}>
+  <BackwardIcon />
+</IconLink>

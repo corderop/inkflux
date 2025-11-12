@@ -1,0 +1,22 @@
+---
+interface Props {
+  url: string | null;
+}
+
+const { url } = Astro.props;
+---
+
+<a href={url} class={url ? "" : "disabled"}>
+  <slot />
+</a>
+
+<style>
+  a {
+    color: #000;
+    text-decoration: none;
+  }
+
+  a.disabled {
+    color: #fff;
+  }
+</style>
