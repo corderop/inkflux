@@ -10,20 +10,22 @@ interface Props {
 const { entryId, isUnread } = Astro.props;
 ---
 
-<button
-  id="mark-as-read"
-  style={!isUnread ? `display: none` : ""}
-  data-entryid={entryId}
->
-  <Eye />
-</button>
-<button
-  id="mark-as-unread"
-  style={isUnread ? `display: none` : ""}
-  data-entryid={entryId}
->
-  <EyeSlash />
-</button>
+<mark-as-read>
+  <button
+    class="mark-as-read"
+    style={!isUnread ? `display: none` : ""}
+    data-entryid={entryId}
+  >
+    <Eye />
+  </button>
+  <button
+    class="mark-as-unread"
+    style={isUnread ? `display: none` : ""}
+    data-entryid={entryId}
+  >
+    <EyeSlash />
+  </button>
+</mark-as-read>
 
 <style>
   button {
@@ -46,57 +48,72 @@ const { entryId, isUnread } = Astro.props;
 <script>
   import type { EntryStatus } from "../../../lib/miniflux-client/types";
 
-  const markAsReadButton = document.getElementById("mark-as-read");
-  const markAsUnreadButton = document.getElementById("mark-as-unread");
+  class MarkAsRead extends HTMLElement {
+    connectedCallback() {
+      const toggleButtonTo = (status: EntryStatus) => {
+        if (!markAsReadButton || !markAsUnreadButton) {
+          return;
+        }
 
-  if (markAsReadButton && markAsUnreadButton) {
-    markAsReadButton.addEventListener("click", async () => {
-      const entryId = markAsReadButton.dataset.entryid ?? "";
-      if (!entryId) return;
-      await changeStatusTo(entryId, "read");
-    });
+        if (status === "unread") {
+          markAsReadButton.style.display = "none";
+          markAsUnreadButton.style.display = "block";
+        } else {
+          markAsReadButton.style.display = "block";
+          markAsUnreadButton.style.display = "none";
+        }
+      };
 
-    markAsUnreadButton.addEventListener("click", async () => {
-      const entryId = markAsReadButton.dataset.entryid ?? "";
-      if (!entryId) return;
-      await changeStatusTo(entryId, "unread");
-    });
+      const makeChangeStatusRequest = async (
+        entryId: string,
+        status: EntryStatus,
+      ) => {
+        const response = await fetch(`/api/entries/${entryId}/change-status`, {
+          method: "PUT",
+          body: JSON.stringify({ status }),
+        });
+
+        if (!response.ok) {
+          throw new Error("Error while changing status");
+        }
+      };
+
+      const changeStatusTo = async (entryId: string, status: EntryStatus) => {
+        const oppositeStatus: EntryStatus =
+          status === "read" ? "unread" : "read";
+
+        toggleButtonTo(oppositeStatus);
+
+        try {
+          await makeChangeStatusRequest(entryId, status);
+        } catch {
+          toggleButtonTo(status);
+        }
+      };
+
+      const markAsReadButton = this.querySelector(
+        ".mark-as-read",
+      ) as HTMLElement;
+      const markAsUnreadButton = this.querySelector(
+        ".mark-as-unread",
+      ) as HTMLElement;
+
+      console.log({ markAsReadButton, markAsUnreadButton });
+      if (markAsReadButton && markAsUnreadButton) {
+        markAsReadButton.addEventListener("click", async () => {
+          const entryId = markAsReadButton.dataset.entryid ?? "";
+          if (!entryId) return;
+          await changeStatusTo(entryId, "read");
+        });
+
+        markAsUnreadButton.addEventListener("click", async () => {
+          const entryId = markAsReadButton.dataset.entryid ?? "";
+          if (!entryId) return;
+          await changeStatusTo(entryId, "unread");
+        });
+      }
+    }
   }
 
-  function toggleButtonTo(status: EntryStatus) {
-    if (!markAsReadButton || !markAsUnreadButton) {
-      return;
-    }
-
-    if (status === "unread") {
-      markAsReadButton.style.display = "none";
-      markAsUnreadButton.style.display = "block";
-    } else {
-      markAsReadButton.style.display = "block";
-      markAsUnreadButton.style.display = "none";
-    }
-  }
-
-  async function makeChangeStatusRequest(entryId: string, status: EntryStatus) {
-    const response = await fetch(`/api/entries/${entryId}/change-status`, {
-      method: "PUT",
-      body: JSON.stringify({ status }),
-    });
-
-    if (!response.ok) {
-      throw new Error("Error while changing status");
-    }
-  }
-
-  async function changeStatusTo(entryId: string, status: EntryStatus) {
-    const oppositeStatus: EntryStatus = status === "read" ? "unread" : "read";
-
-    toggleButtonTo(oppositeStatus);
-
-    try {
-      await makeChangeStatusRequest(entryId, status);
-    } catch {
-      toggleButtonTo(status);
-    }
-  }
+  customElements.define("mark-as-read", MarkAsRead);
 </script>

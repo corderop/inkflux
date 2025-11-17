@@ -70,6 +70,8 @@ export class MinifluxClient {
       },
     });
 
+    console.log({ url, options });
+
     if (!response.ok) {
       switch (response.status) {
         case 401:

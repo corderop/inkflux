@@ -22,7 +22,7 @@ function validateInput(
   params: Record<string, string | undefined>,
   body: Body,
 ): { isValid: boolean; errorMessage?: string } {
-  const entryId = params.entry;
+  const entryId = params.entryId;
   if (!entryId && isNaN(Number(entryId))) {
     return {
       isValid: false,
