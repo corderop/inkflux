@@ -6,7 +6,7 @@ interface Props {
 }
 
 const { content } = Astro.props;
-const sanitizedContent = DOMPurify.sanitize(content);
+const sanitizedContent = DOMPurify.sanitize(content, { FORBID_ATTR: ["href"] });
 ---
 
 <article-reader>
