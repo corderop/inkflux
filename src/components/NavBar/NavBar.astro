@@ -10,19 +10,11 @@ interface Props {
   entryId: number;
   title: string;
   feedTitle: string;
-  previousArticleUrl: string | null;
-  nextArticleUrl: string | null;
   isUnread: boolean;
+  articlePosition: "first" | "middle" | "last";
 }
 
-const {
-  entryId,
-  title,
-  feedTitle,
-  previousArticleUrl,
-  nextArticleUrl,
-  isUnread,
-} = Astro.props;
+const { entryId, title, feedTitle, isUnread, articlePosition } = Astro.props;
 ---
 
 <nav>
@@ -31,14 +23,14 @@ const {
       <MarkAsRead entryId={entryId} isUnread={isUnread} />
     </NavButton>
 
-    <NavButton>
-      <PreviousArticle url={previousArticleUrl} />
+    <NavButton isHidden={articlePosition === "first"}>
+      <PreviousArticle entryId={entryId} />
     </NavButton>
 
     <NavTitle title={`${feedTitle} - ${title}`} />
 
-    <NavButton>
-      <NextArticle url={nextArticleUrl} />
+    <NavButton isHidden={articlePosition === "last"}>
+      <NextArticle entryId={entryId} />
     </NavButton>
 
     <NavButton>

@@ -1,14 +1,14 @@
 ---
 import BackwardIcon from "../../icons/BackwardIcon.astro";
-import IconLink from "../templates/IconLink.astro";
+import GoToPage from "./GoToPage.astro";
 
 interface Props {
-  url: string | null;
+  entryId: number;
 }
 
-const { url } = Astro.props;
+const { entryId } = Astro.props;
 ---
 
-<IconLink url={url}>
+<GoToPage eventType="pageDown" entryId={entryId}>
   <BackwardIcon />
-</IconLink>
+</GoToPage>

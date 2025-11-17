@@ -1,6 +1,6 @@
 ---
 import Body from "../layouts/Body.astro";
-import LoginContainer from "../containers/LoginContainer.astro";
+import LoginContainer from "../components/LoginContainer.astro";
 import AstroCookiesManager from "../lib/astro-cookies-manager";
 
 function isUserAlreadyLogged() {
@@ -15,7 +15,7 @@ function isUserAlreadyLogged() {
 
 const error = Astro.url.searchParams.get("error");
 if (isUserAlreadyLogged()) {
-  return Astro.redirect("/articles/0");
+  return Astro.redirect("/unreads");
 }
 ---
 

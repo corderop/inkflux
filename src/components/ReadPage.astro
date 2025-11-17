@@ -1,0 +1,69 @@
+---
+import Article from "../components/Article/Article.astro";
+import NavBar from "../components/NavBar/NavBar.astro";
+import type { Entry } from "../lib/miniflux-client/types";
+
+interface Props {
+  entries: Entry[];
+}
+
+const { entries } = Astro.props;
+
+function getArticlePosition(index: number) {
+  if (index === 0) return "first";
+  if (index === entries.length - 1) return "last";
+  return "middle";
+}
+---
+
+{
+  entries.map((entry, index) => (
+    <div
+      id={`entry-${entry.id}`}
+      class="entry"
+      style={`${index === 0 ? "" : "display: none"};`}
+      data-index={index}
+    >
+      <NavBar
+        entryId={entry.id}
+        title={entry.title}
+        feedTitle={entry.feed.title}
+        isUnread={entry.status === "unread"}
+        articlePosition={getArticlePosition(index)}
+      />
+      <Article content={entry.content} />
+    </div>
+  ))
+}
+
+<script>
+  let currentEntryIndex = 0;
+
+  type EventType = "pageUp" | "pageDown";
+
+  function enableEntry(eventType: EventType) {
+    const entries = document.getElementsByClassName("entry");
+    const futureEntryIndex =
+      eventType === "pageUp" ? currentEntryIndex + 1 : currentEntryIndex - 1;
+
+    const currentEntry = entries[currentEntryIndex] as HTMLElement;
+    const futureEntry = entries[futureEntryIndex] as HTMLElement;
+
+    if (!currentEntry || !futureEntry) {
+      throw new Error("No elements were found in the DOM, aborting.");
+    }
+
+    currentEntry.style = "display: none";
+    futureEntry.style = "";
+
+    currentEntryIndex = futureEntryIndex;
+  }
+
+  function processPageChangeEvent(event: Event) {
+    event.preventDefault();
+    enableEntry(event.type as EventType);
+  }
+
+  document.addEventListener("pageUp", processPageChangeEvent);
+  document.addEventListener("pageDown", processPageChangeEvent);
+</script>

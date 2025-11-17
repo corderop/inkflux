@@ -1,0 +1,49 @@
+---
+interface Props {
+  eventType: "pageUp" | "pageDown";
+  entryId: number;
+}
+
+const { eventType, entryId } = Astro.props;
+---
+
+<button class="go-to-page" data-eventtype={eventType} data-entryid={entryId}>
+  <slot />
+</button>
+
+<style>
+  button {
+    background: none;
+    color: inherit;
+    border: none;
+    padding: 0;
+    font: inherit;
+    cursor: pointer;
+    outline: inherit;
+    width: 100%;
+    height: 100%;
+  }
+
+  button:hover {
+    cursor: pointer;
+  }
+</style>
+
+<script>
+  const buttons = document.getElementsByClassName(`go-to-page`);
+  for (const button of buttons) {
+    button.addEventListener("click", (event) => {
+      event.preventDefault();
+
+      const entryId = (button as HTMLElement).dataset.entryid;
+      const eventType = (button as HTMLElement).dataset.eventtype;
+      if (!entryId || !eventType) {
+        throw new Error("Missing entryId or eventType");
+      }
+
+      document.dispatchEvent(
+        new CustomEvent(eventType, { detail: { entryId } }),
+      );
+    });
+  }
+</script>

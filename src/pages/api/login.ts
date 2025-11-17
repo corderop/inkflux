@@ -37,5 +37,5 @@ export const POST: APIRoute = async ({ request, redirect, cookies }) => {
   const cookieManager = new AstroCookiesManager(cookies);
   cookieManager.setMinifluxSessionCookies({ url: cleanedUrl, apiToken });
 
-  return redirect("/articles/0");
+  return redirect("/unreads");
 };
