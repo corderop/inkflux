@@ -72,10 +72,8 @@ export const PUT: APIRoute = async ({ params, request, cookies }) => {
       return new Response(error.message, { status: 404 });
     }
     if (error instanceof MinifluxServerError) {
-      console.log(error);
       return new Response(error.message, { status: 500 });
     }
-    console.log(error);
     return new Response("Internal Server Error", { status: 500 });
   }
 };

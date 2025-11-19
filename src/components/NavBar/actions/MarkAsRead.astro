@@ -98,7 +98,6 @@ const { entryId, isUnread } = Astro.props;
         ".mark-as-unread",
       ) as HTMLElement;
 
-      console.log({ markAsReadButton, markAsUnreadButton });
       if (markAsReadButton && markAsUnreadButton) {
         markAsReadButton.addEventListener("click", async () => {
           const entryId = markAsReadButton.dataset.entryid ?? "";
