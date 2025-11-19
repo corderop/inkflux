@@ -16,7 +16,7 @@
     "lint:fix": "eslint --fix .",
     "lint:fix:file": "eslint --fix",
     "lint:staged": "lint-staged",
-    "prepare": "husky"
+    "prepare": "husky || true"
   },
   "dependencies": {
     "@astrojs/node": "^9.5.0",
