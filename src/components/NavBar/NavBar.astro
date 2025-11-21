@@ -1,5 +1,4 @@
 ---
-import MarkAsRead from "./actions/MarkAsRead.astro";
 import PreviousArticle from "./actions/PreviousArticle.astro";
 import NextArticle from "./actions/NextArticle.astro";
 import Logout from "./actions/Logout.astro";
@@ -10,19 +9,14 @@ interface Props {
   entryId: number;
   title: string;
   feedTitle: string;
-  isUnread: boolean;
   articlePosition: "first" | "middle" | "last";
 }
 
-const { entryId, title, feedTitle, isUnread, articlePosition } = Astro.props;
+const { entryId, title, feedTitle, articlePosition } = Astro.props;
 ---
 
 <nav>
   <ul>
-    <NavButton>
-      <MarkAsRead entryId={entryId} isUnread={isUnread} />
-    </NavButton>
-
     <NavButton isHidden={articlePosition === "first"}>
       <PreviousArticle entryId={entryId} />
     </NavButton>

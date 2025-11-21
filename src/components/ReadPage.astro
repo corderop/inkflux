@@ -28,7 +28,6 @@ function getArticlePosition(index: number) {
         entryId={entry.id}
         title={entry.title}
         feedTitle={entry.feed.title}
-        isUnread={entry.status === "unread"}
         articlePosition={getArticlePosition(index)}
       />
       <Article content={entry.content} />
