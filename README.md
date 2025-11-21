@@ -38,13 +38,7 @@ E-Ink devices are not optimized for modern websites, they are slow and drain bat
 
 ### Running Locally
 
-1.  Clone the repository:
-
-    ```bash
-    git clone https://github.com/yourusername/inkflux.git
-    cd inkflux
-    ```
-
+1.  Clone the repository
 2.  Install dependencies:
 
     ```bash
@@ -78,3 +72,7 @@ A: No, Inkflux is specifically built as a client for the Miniflux API.
 
 **Q: How do I login?**
 A: You will need your Miniflux server URL and your API Token. You can generate an API Token in your Miniflux settings.
+
+## 🤝 Contributing
+
+Contributions are welcome! Please read our [Contributing Guidelines](CONTRIBUTING.md) for details on how to submit pull requests, report issues, and our code of conduct.
