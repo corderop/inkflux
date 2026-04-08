@@ -1,0 +1,12 @@
+---
+import MobileLogin from "./MobileLogin/MobileLogin.astro";
+
+interface Props {
+  sessionId: string;
+  hasError: boolean;
+}
+
+const { sessionId, hasError } = Astro.props;
+---
+
+<MobileLogin sessionId={sessionId} hasError={hasError} />

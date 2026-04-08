@@ -1,0 +1,36 @@
+---
+import LoginContainer from "../LoginContainer.astro";
+
+interface Props {
+  sessionId: string;
+  hasError: boolean;
+}
+
+const { sessionId, hasError } = Astro.props;
+---
+
+<div class="mobile-login-container">
+  <h2>Login to Inkflux</h2>
+  <p>
+    Please enter your Miniflux server and API token to authenticate your reader.
+  </p>
+  <LoginContainer hasError={hasError} sessionId={sessionId} />
+</div>
+
+<style>
+  .mobile-login-container {
+    padding: 2rem;
+    max-width: 400px;
+    margin: 0 auto;
+    text-align: center;
+  }
+
+  h2 {
+    margin-bottom: 0.5rem;
+  }
+
+  p {
+    margin-bottom: 1.5rem;
+    color: #666;
+  }
+</style>

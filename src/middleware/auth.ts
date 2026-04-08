@@ -1,7 +1,13 @@
 import { defineMiddleware } from "astro:middleware";
 import AstroCookiesManager from "../lib/astro-cookies-manager";
 
-const PUBLIC_PATHS = ["/login", "/api/login"];
+const PUBLIC_PATHS = [
+  "/login",
+  "/api/login",
+  "/auth/mobile",
+  "/auth/success",
+  "/api/auth/poll",
+];
 
 /**
  * Astro middleware for authentication.

@@ -1,0 +1,58 @@
+---
+import { renderSVG } from "uqr";
+
+interface Props {
+  sessionId: string;
+  mobileLoginUrl: string;
+}
+
+const { sessionId, mobileLoginUrl } = Astro.props;
+const qrCodeSvg = renderSVG(mobileLoginUrl);
+---
+
+<div class="qr-section">
+  <div class="qr-box" set:html={qrCodeSvg} />
+  <p class="qr-instructions">
+    Scan this QR code with your mobile phone to login.
+  </p>
+</div>
+
+<script data-session={sessionId}>
+  const script = document.currentScript;
+  const session = script.getAttribute("data-session");
+
+  const poll = window.setInterval(async () => {
+    try {
+      const res = await fetch(`/api/auth/poll?session=${session}`);
+      const data = await res.json();
+
+      if (data.status === "success") {
+        window.clearInterval(poll);
+        window.location.href = "/unreads";
+      }
+    } catch (err) {
+      console.log(err);
+    }
+  }, 3000);
+</script>
+
+<style>
+  .qr-section {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .qr-box {
+    width: 200px;
+    height: 200px;
+    background: white;
+    padding: 10px;
+  }
+
+  .qr-instructions {
+    margin-top: 1rem;
+    font-size: 1.1rem;
+    text-align: center;
+  }
+</style>

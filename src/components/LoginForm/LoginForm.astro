@@ -10,6 +10,7 @@ interface Props {
   method: string;
   action: string;
   hasError: boolean;
+  sessionId?: string;
 }
 
 /**
@@ -18,12 +19,13 @@ interface Props {
  * and a submit button. The form's submission method and action URL are
  * configurable via props.
  */
-const { method, action, hasError } = Astro.props;
+const { method, action, hasError, sessionId } = Astro.props;
 const errorId = "login-error-message";
 ---
 
 <form method={method} action={action}>
   {hasError && <ErrorMessage id={errorId} />}
+  {sessionId && <input type="hidden" name="sessionId" value={sessionId} />}
   <label for="server">
     Miniflux Server URL
     <input
@@ -57,7 +59,9 @@ const errorId = "login-error-message";
   form {
     display: flex;
     flex-direction: column;
-    width: 20rem;
+    width: 100%;
+    max-width: 20rem;
+    box-sizing: border-box;
     gap: 1rem;
     padding: 1rem;
     margin: 1rem auto;
@@ -72,6 +76,8 @@ const errorId = "login-error-message";
     padding: 0.5rem;
     border-radius: 0.2rem;
     border: 1px solid #ccc;
+    box-sizing: border-box;
+    width: 100%;
   }
 
   button {

@@ -1,11 +1,53 @@
 ---
 import LoginForm from "../components/LoginForm/LoginForm.astro";
+import LoginMobileForm from "../components/LoginMobileForm/LoginMobileForm.astro";
 
 interface Props {
   hasError: boolean;
+  sessionId?: string;
+  mobileLoginUrl?: string;
 }
 
-const { hasError } = Astro.props;
+const { hasError, sessionId, mobileLoginUrl } = Astro.props;
 ---
 
-<LoginForm method="POST" action="/api/login" hasError={hasError} />
+<div class="login-layout">
+  {
+    mobileLoginUrl && sessionId && (
+      <LoginMobileForm sessionId={sessionId} mobileLoginUrl={mobileLoginUrl} />
+    )
+  }
+
+  <div class={`keyboard-section ${mobileLoginUrl ? "with-qr" : ""}`}>
+    {mobileLoginUrl && <p>Or use your keyboard:</p>}
+    <LoginForm
+      method="POST"
+      action="/api/login"
+      hasError={hasError}
+      sessionId={sessionId}
+    />
+  </div>
+</div>
+
+<style>
+  .login-layout {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 2rem;
+    padding: 2rem;
+  }
+
+  .keyboard-section {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+    max-width: 400px;
+  }
+
+  .keyboard-section.with-qr {
+    border-top: 1px solid #ccc;
+    padding-top: 2rem;
+  }
+</style>

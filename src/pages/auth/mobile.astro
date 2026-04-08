@@ -1,0 +1,17 @@
+---
+import Body from "../../layouts/Body.astro";
+import MobileLoginContainer from "../../components/MobileLoginContainer.astro";
+import { authSessionStore } from "../../lib/auth-session-store";
+
+const sessionId = Astro.url.searchParams.get("session");
+
+if (!sessionId || !authSessionStore.getSession(sessionId)) {
+  return new Response("Invalid or expired session", { status: 404 });
+}
+
+const error = Astro.url.searchParams.get("error");
+---
+
+<Body>
+  <MobileLoginContainer hasError={Boolean(error)} sessionId={sessionId} />
+</Body>

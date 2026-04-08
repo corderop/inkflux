@@ -2,6 +2,9 @@
 import Body from "../layouts/Body.astro";
 import LoginContainer from "../components/LoginContainer.astro";
 import AstroCookiesManager from "../lib/astro-cookies-manager";
+import crypto from "node:crypto";
+import { authSessionStore } from "../lib/auth-session-store";
+import { getPublicUrl } from "../lib/url";
 
 function isUserAlreadyLogged() {
   const cookieManager = new AstroCookiesManager(Astro.cookies);
@@ -17,8 +20,20 @@ const error = Astro.url.searchParams.get("error");
 if (isUserAlreadyLogged()) {
   return Astro.redirect("/unreads");
 }
+
+const sessionId = crypto.randomUUID();
+authSessionStore.createSession(sessionId);
+
+const mobileLoginUrl = getPublicUrl(
+  `/auth/mobile?session=${sessionId}`,
+  Astro.url,
+);
 ---
 
 <Body>
-  <LoginContainer hasError={Boolean(error)} />
+  <LoginContainer
+    hasError={Boolean(error)}
+    sessionId={sessionId}
+    mobileLoginUrl={mobileLoginUrl}
+  />
 </Body>
