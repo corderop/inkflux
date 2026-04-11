@@ -24,7 +24,7 @@ const { hasError, sessionId, mobileLoginUrl } = Astro.props;
       method="POST"
       action="/api/login"
       hasError={hasError}
-      sessionId={sessionId}
+      sessionId={mobileLoginUrl ? undefined : sessionId}
     />
   </div>
 </div>
