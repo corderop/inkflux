@@ -1,31 +1,31 @@
 ---
-import PreviousArticle from "./actions/PreviousArticle.astro";
-import NextArticle from "./actions/NextArticle.astro";
 import Logout from "./actions/Logout.astro";
 import NavButton from "./templates/NavButton.astro";
 import NavTitle from "./templates/NavTitle.astro";
+import IconLink from "./templates/IconLink.astro";
+import ArrowLeft from "../icons/ArrowLeft.astro";
 
 interface Props {
-  entryId: number;
   title: string;
-  feedTitle: string;
-  articlePosition: "first" | "middle" | "last";
+  backUrl?: string;
 }
 
-const { entryId, title, feedTitle, articlePosition } = Astro.props;
+const { title, backUrl } = Astro.props;
 ---
 
 <nav>
   <ul>
-    <NavButton isHidden={articlePosition === "first"}>
-      <PreviousArticle entryId={entryId} />
-    </NavButton>
+    {
+      backUrl && (
+        <NavButton>
+          <IconLink url={backUrl}>
+            <ArrowLeft />
+          </IconLink>
+        </NavButton>
+      )
+    }
 
-    <NavTitle title={`${feedTitle} - ${title}`} />
-
-    <NavButton isHidden={articlePosition === "last"}>
-      <NextArticle entryId={entryId} />
-    </NavButton>
+    <NavTitle title={title} />
 
     <NavButton>
       <Logout url="/api/logout" />

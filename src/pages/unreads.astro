@@ -1,15 +1,8 @@
 ---
 export const prerender = false;
-import ReadPage from "../components/ReadPage.astro";
+import UnreadsContainer from "../components/Unreads/UnreadsContainer.astro";
 import Body from "../layouts/Body.astro";
-import { MinifluxClient } from "../lib/miniflux-client";
 import AstroCookiesManager from "../lib/astro-cookies-manager";
-import {
-  MinifluxAuthError,
-  MinifluxBadRequestError,
-  MinifluxNotFoundError,
-} from "../lib/miniflux-client/errors";
-import { ARTICLE_LIMIT } from "../config";
 
 let url, apiToken;
 try {
@@ -18,30 +11,8 @@ try {
 } catch {
   return Astro.redirect("/login");
 }
-
-// TODO: To implement pagination in #23
-const minifluxClient = new MinifluxClient(url, apiToken);
-let entries;
-try {
-  entries = await minifluxClient.getEntries({
-    status: "unread",
-    order: "published_at",
-    direction: "asc",
-    limit: ARTICLE_LIMIT,
-  });
-} catch (error) {
-  if (error instanceof MinifluxAuthError) {
-    return Astro.rewrite("/api/logout");
-  } else if (error instanceof MinifluxBadRequestError) {
-    return Astro.rewrite("/400");
-  } else if (error instanceof MinifluxNotFoundError) {
-    return Astro.rewrite("/404");
-  } else {
-    return Astro.rewrite("/500");
-  }
-}
 ---
 
 <Body>
-  <ReadPage entries={entries.entries} />
+  <UnreadsContainer url={url} apiToken={apiToken} />
 </Body>

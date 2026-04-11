@@ -1,0 +1,25 @@
+---
+export const prerender = false;
+import ReadContainer from "../../components/ReadContainer.astro";
+import Body from "../../layouts/Body.astro";
+import AstroCookiesManager from "../../lib/astro-cookies-manager";
+
+let url, apiToken;
+try {
+  const cookieManager = new AstroCookiesManager(Astro.cookies);
+  ({ url, apiToken } = cookieManager.getMinifluxSessionCookies());
+} catch {
+  return Astro.redirect("/login");
+}
+
+const { id } = Astro.params;
+const entryId = parseInt(id as string, 10);
+
+if (isNaN(entryId)) {
+  return Astro.rewrite("/404");
+}
+---
+
+<Body>
+  <ReadContainer url={url} apiToken={apiToken} entryId={entryId} />
+</Body>

@@ -1,0 +1,42 @@
+---
+import NavBar from "./NavBar/NavBar.astro";
+import Article from "./Article/Article.astro";
+import { MinifluxClient } from "../lib/miniflux-client";
+import {
+  MinifluxAuthError,
+  MinifluxBadRequestError,
+  MinifluxNotFoundError,
+} from "../lib/miniflux-client/errors";
+
+interface Props {
+  url: string;
+  apiToken: string;
+  entryId: number;
+}
+
+const { url, apiToken, entryId } = Astro.props;
+
+const minifluxClient = new MinifluxClient(url, apiToken);
+
+let entry;
+try {
+  entry = await minifluxClient.getEntry(entryId);
+} catch (error) {
+  if (error instanceof MinifluxAuthError) {
+    return Astro.rewrite("/api/logout");
+  } else if (error instanceof MinifluxBadRequestError) {
+    return Astro.rewrite("/400");
+  } else if (error instanceof MinifluxNotFoundError) {
+    return Astro.rewrite("/404");
+  } else {
+    return Astro.rewrite("/500");
+  }
+}
+---
+
+<div class="read-container">
+  <NavBar title={`${entry.feed.title} - ${entry.title}`} backUrl="/unreads" />
+  <div class="article-wrapper">
+    <Article content={entry.content} />
+  </div>
+</div>

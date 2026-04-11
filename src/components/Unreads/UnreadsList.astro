@@ -1,0 +1,199 @@
+---
+import UnreadItem from "./UnreadItem.astro";
+import NavBar from "../NavBar/NavBar.astro";
+import type { Entry } from "../../lib/miniflux-client/types";
+
+interface Props {
+  entries: Entry[];
+}
+
+const { entries } = Astro.props;
+---
+
+<div class="unreads-list-wrapper">
+  <NavBar title="Inkflux" />
+  {
+    entries.length > 0 ? (
+      <>
+        <ul class="unreads-list" id="unreadsList">
+          {entries.map((entry) => (
+            <UnreadItem entry={entry} />
+          ))}
+        </ul>
+
+        <div class="pagination" id="paginationControls">
+          <button id="prevBtn" class="btn disabled">
+            Previous
+          </button>
+          <button id="nextBtn" class="btn disabled">
+            Next
+          </button>
+        </div>
+      </>
+    ) : (
+      <div class="empty-state">
+        <p>No unread articles left! 🎉</p>
+      </div>
+    )
+  }
+</div>
+
+<script>
+  document.addEventListener("DOMContentLoaded", () => {
+    const wrapper = document.querySelector(".unreads-list-wrapper");
+    if (!wrapper) return;
+
+    const items = document.querySelectorAll(
+      ".unread-item",
+    ) as NodeListOf<HTMLElement>;
+    if (items.length === 0) return;
+
+    const prevBtn = document.getElementById("prevBtn");
+    const nextBtn = document.getElementById("nextBtn");
+    const paginationControls = document.getElementById("paginationControls");
+    const navBar = document.querySelector("nav");
+
+    if (!prevBtn || !nextBtn || !paginationControls) return;
+
+    // Calculate available height: window height minus pagination height, nav bar height, and a small buffer
+    const navHeight = navBar ? navBar.offsetHeight : 0;
+    const availableHeight =
+      window.innerHeight - paginationControls.offsetHeight - navHeight - 20;
+
+    const localPages: HTMLElement[][] = [];
+    let currentLocalPageItems: HTMLElement[] = [];
+    let currentLocalHeight = 0;
+
+    // Measure and chunk items into local pages
+    items.forEach((item) => {
+      item.style.display = "flex";
+      const itemHeight = item.offsetHeight;
+
+      if (
+        currentLocalHeight + itemHeight > availableHeight &&
+        currentLocalPageItems.length > 0
+      ) {
+        localPages.push(currentLocalPageItems);
+        currentLocalPageItems = [];
+        currentLocalHeight = 0;
+      }
+      currentLocalPageItems.push(item);
+      currentLocalHeight += itemHeight;
+    });
+
+    if (currentLocalPageItems.length > 0) {
+      localPages.push(currentLocalPageItems);
+    }
+
+    let currentLocalPageIndex = 0;
+
+    function updatePaginationButtons() {
+      if (currentLocalPageIndex > 0) {
+        prevBtn!.classList.remove("disabled");
+      } else {
+        prevBtn!.classList.add("disabled");
+      }
+
+      if (currentLocalPageIndex < localPages.length - 1) {
+        nextBtn!.classList.remove("disabled");
+      } else {
+        nextBtn!.classList.add("disabled");
+      }
+    }
+
+    function renderPage() {
+      // Hide all items
+      items.forEach((item) => {
+        item.style.display = "none";
+      });
+
+      // Show items for the current local chunk
+      const currentItems = localPages[currentLocalPageIndex];
+      currentItems.forEach((item) => {
+        item.style.display = "flex";
+      });
+
+      updatePaginationButtons();
+
+      // Keep viewport at the top without scrolling
+      window.scrollTo(0, 0);
+    }
+
+    function goToPreviousPage() {
+      if (prevBtn!.classList.contains("disabled")) return;
+      if (currentLocalPageIndex > 0) {
+        currentLocalPageIndex--;
+        renderPage();
+      }
+    }
+
+    function goToNextPage() {
+      if (nextBtn!.classList.contains("disabled")) return;
+      if (currentLocalPageIndex < localPages.length - 1) {
+        currentLocalPageIndex++;
+        renderPage();
+      }
+    }
+
+    prevBtn.addEventListener("click", goToPreviousPage);
+    nextBtn.addEventListener("click", goToNextPage);
+
+    renderPage();
+  });
+</script>
+
+<style>
+  .unreads-list-wrapper {
+    background-color: #fff;
+    color: #222;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+  }
+  .unreads-list {
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
+  }
+  .pagination {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem 1rem 0 1rem;
+    border-top: 1px solid #ddd;
+    /* Ensure pagination stays at the bottom */
+    margin-top: auto;
+    position: sticky;
+    bottom: 0;
+    background: #fff;
+  }
+  .btn {
+    display: inline-block;
+    padding: 0.75rem 1.5rem;
+    border: 1px solid #ccc;
+    background: #fff;
+    color: #333;
+    font-size: 1rem;
+    font-weight: bold;
+    cursor: pointer;
+    text-decoration: none;
+    text-align: center;
+  }
+  .btn:active:not(.disabled) {
+    background: #f0f0f0;
+    color: #222;
+  }
+  .btn.disabled {
+    border-color: #aaa;
+    color: #aaa;
+    cursor: default;
+  }
+  .empty-state {
+    padding: 3rem 1rem;
+    text-align: center;
+    font-size: 1.5rem;
+    font-weight: bold;
+  }
+</style>

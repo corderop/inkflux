@@ -1,0 +1,42 @@
+---
+import UnreadsList from "./UnreadsList.astro";
+import { MinifluxClient } from "../../lib/miniflux-client";
+import { ARTICLE_LIMIT } from "../../config";
+
+import {
+  MinifluxAuthError,
+  MinifluxBadRequestError,
+  MinifluxNotFoundError,
+} from "../../lib/miniflux-client/errors";
+
+interface Props {
+  url: string;
+  apiToken: string;
+}
+
+const { url, apiToken } = Astro.props;
+
+const minifluxClient = new MinifluxClient(url, apiToken);
+
+let response;
+try {
+  response = await minifluxClient.getEntries({
+    status: "unread",
+    order: "published_at",
+    direction: "desc",
+    limit: ARTICLE_LIMIT,
+  });
+} catch (error) {
+  if (error instanceof MinifluxAuthError) {
+    return Astro.rewrite("/api/logout");
+  } else if (error instanceof MinifluxBadRequestError) {
+    return Astro.rewrite("/400");
+  } else if (error instanceof MinifluxNotFoundError) {
+    return Astro.rewrite("/404");
+  } else {
+    return Astro.rewrite("/500");
+  }
+}
+---
+
+<UnreadsList entries={response.entries} />

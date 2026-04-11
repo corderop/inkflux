@@ -7,6 +7,7 @@ import {
 } from "./errors";
 import type {
   EntriesResponse,
+  Entry,
   EntryStatus,
   GetEntriesFilters,
   User,
@@ -126,6 +127,25 @@ export class MinifluxClient {
     return this.fetch<EntriesResponse>({
       path: "/v1/entries",
       queryParams: filters,
+    });
+  }
+
+  /**
+   * Retrieves a single entry from the Miniflux API.
+   * @param {number} entryId The ID of the entry to retrieve.
+   *
+   * @returns {Promise<Entry>} The response from the API.
+   *
+   * @throws {MinifluxAuthError} When authentication fails (401, 403).
+   * @throws {MinifluxBadRequestError} When the request is malformed (400).
+   * @throws {MinifluxNotFoundError} When the requested resource is not found (404).
+   * @throws {MinifluxServerError} When the server returns an error (5xx).
+   * @throws {MinifluxError} For any other non-ok response.
+   * @see https://miniflux.app/docs/api.html#endpoint-get-entry
+   */
+  public async getEntry(entryId: number): Promise<Entry> {
+    return this.fetch<Entry>({
+      path: `/v1/entries/${entryId}`,
     });
   }
 

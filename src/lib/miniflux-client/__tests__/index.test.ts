@@ -141,6 +141,35 @@ describe("MinifluxClient", () => {
     });
   });
 
+  describe("getEntry", () => {
+    it("should call the proper URL", async () => {
+      const fetchSpy = mockFetch({
+        statusCode: 200,
+        json: mockEntries.entries[0],
+      });
+
+      const client = new MinifluxClient(fakeUrl, fakeToken);
+      await client.getEntry(123);
+
+      expect(fetchSpy).toHaveBeenCalledWith(
+        `${fakeUrl}/v1/entries/123`,
+        expect.any(Object),
+      );
+    });
+
+    it("should return what's returned by the API", async () => {
+      mockFetch({
+        statusCode: 200,
+        json: mockEntries.entries[0],
+      });
+
+      const client = new MinifluxClient(fakeUrl, fakeToken);
+      const entry = await client.getEntry(123);
+
+      expect(entry).toBe(mockEntries.entries[0]);
+    });
+  });
+
   describe("changeEntryStatus", () => {
     it("should call the proper URL", async () => {
       const fetchSpy = mockFetch({
