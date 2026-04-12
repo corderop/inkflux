@@ -5,3 +5,7 @@ export const AUTHENTICATION_EXPIRATION_TIME_SECONDS = 60 * 60 * 24 * 365; // 1 y
 
 // User Experience customization
 export const ARTICLE_LIMIT = 50;
+
+// Feed filter repository
+export const FILTER_BATCH_SIZE = 50;
+export const FILTER_MAX_API_CALLS = 3;

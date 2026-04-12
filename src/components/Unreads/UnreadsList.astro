@@ -1,17 +1,26 @@
 ---
 import UnreadItem from "./UnreadItem.astro";
 import NavBar from "../NavBar/NavBar.astro";
-import type { Entry } from "../../lib/miniflux-client/types";
+import FilterPanel from "./FilterPanel.astro";
+import type { Entry, Feed } from "../../lib/miniflux-client/types";
 
 interface Props {
   entries: Entry[];
+  feeds: Feed[];
+  excludedCategoryIds: number[];
+  excludedFeedIds: number[];
 }
 
-const { entries } = Astro.props;
+const { entries, feeds, excludedCategoryIds, excludedFeedIds } = Astro.props;
 ---
 
 <div class="unreads-list-wrapper">
-  <NavBar title="Inkflux" />
+  <NavBar title="Inkflux" showFilter={true} />
+  <FilterPanel
+    feeds={feeds}
+    excludedCategoryIds={excludedCategoryIds}
+    excludedFeedIds={excludedFeedIds}
+  />
   {
     entries.length > 0 ? (
       <>

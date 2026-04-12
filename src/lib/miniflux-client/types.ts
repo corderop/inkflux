@@ -1,3 +1,5 @@
+export type FeedsResponse = Feed[];
+
 export interface Feed {
   id: number;
   user_id: number;

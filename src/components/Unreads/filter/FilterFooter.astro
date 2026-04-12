@@ -1,0 +1,33 @@
+---
+// No props — the footer always renders the same Apply button
+---
+
+<div class="filter-footer">
+  <button id="filterApply" class="filter-apply-btn">Apply</button>
+</div>
+
+<style>
+  .filter-footer {
+    padding: 1rem;
+    border-top: 1px solid #ddd;
+    position: sticky;
+    bottom: 0;
+    background: #fff;
+  }
+
+  .filter-apply-btn {
+    display: block;
+    width: 100%;
+    padding: 0.75rem;
+    font-size: 1rem;
+    font-weight: bold;
+    border: 1px solid #222;
+    background: #fff;
+    cursor: pointer;
+    text-align: center;
+  }
+
+  .filter-apply-btn:active {
+    background: #f0f0f0;
+  }
+</style>

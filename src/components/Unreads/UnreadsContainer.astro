@@ -1,7 +1,13 @@
 ---
 import UnreadsList from "./UnreadsList.astro";
 import { MinifluxClient } from "../../lib/miniflux-client";
-import { ARTICLE_LIMIT } from "../../config";
+import { FilteredEntriesRepository } from "../../lib/filtered-entries-repository";
+import { getFilterStateFromCookies } from "../../lib/feed-filter-store/server";
+import {
+  ARTICLE_LIMIT,
+  FILTER_BATCH_SIZE,
+  FILTER_MAX_API_CALLS,
+} from "../../config";
 
 import {
   MinifluxAuthError,
@@ -17,15 +23,21 @@ interface Props {
 const { url, apiToken } = Astro.props;
 
 const minifluxClient = new MinifluxClient(url, apiToken);
+const repository = new FilteredEntriesRepository(minifluxClient);
+const filterState = getFilterStateFromCookies(Astro.cookies);
 
-let response;
+let feeds;
+let entries;
 try {
-  response = await minifluxClient.getEntries({
-    status: "unread",
-    order: "published_at",
-    direction: "desc",
-    limit: ARTICLE_LIMIT,
-  });
+  [feeds, entries] = await Promise.all([
+    minifluxClient.getFeeds(),
+    repository.getFilteredUnreadEntries({
+      filterState,
+      limit: ARTICLE_LIMIT,
+      batchSize: FILTER_BATCH_SIZE,
+      maxCalls: FILTER_MAX_API_CALLS,
+    }),
+  ]);
 } catch (error) {
   if (error instanceof MinifluxAuthError) {
     return Astro.rewrite("/api/logout");
@@ -39,4 +51,9 @@ try {
 }
 ---
 
-<UnreadsList entries={response.entries} />
+<UnreadsList
+  entries={entries}
+  feeds={feeds}
+  excludedCategoryIds={filterState.excludedCategoryIds}
+  excludedFeedIds={filterState.excludedFeedIds}
+/>

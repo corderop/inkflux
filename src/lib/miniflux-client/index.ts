@@ -9,6 +9,7 @@ import type {
   EntriesResponse,
   Entry,
   EntryStatus,
+  FeedsResponse,
   GetEntriesFilters,
   User,
 } from "./types";
@@ -106,6 +107,22 @@ export class MinifluxClient {
     return {
       "X-Auth-Token": this.token,
     };
+  }
+
+  /**
+   * Retrieves all feeds the current user is subscribed to.
+   *
+   * @returns {Promise<FeedsResponse>} The list of feeds.
+   *
+   * @throws {MinifluxAuthError} When authentication fails (401, 403).
+   * @throws {MinifluxBadRequestError} When the request is malformed (400).
+   * @throws {MinifluxNotFoundError} When the resource is not found (404).
+   * @throws {MinifluxServerError} When the server returns an error (5xx).
+   * @throws {MinifluxError} For any other non-ok response.
+   * @see https://miniflux.app/docs/api.html#endpoint-get-feeds
+   */
+  public async getFeeds(): Promise<FeedsResponse> {
+    return this.fetch<FeedsResponse>({ path: "/v1/feeds" });
   }
 
   /**

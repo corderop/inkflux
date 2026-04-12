@@ -4,17 +4,29 @@ import NavButton from "./templates/NavButton.astro";
 import NavTitle from "./templates/NavTitle.astro";
 import IconLink from "./templates/IconLink.astro";
 import ArrowLeft from "../icons/ArrowLeft.astro";
+import FunnelIcon from "../icons/FunnelIcon.astro";
 
 interface Props {
   title: string;
   backUrl?: string;
+  showFilter?: boolean;
 }
 
-const { title, backUrl } = Astro.props;
+const { title, backUrl, showFilter } = Astro.props;
 ---
 
 <nav>
   <ul>
+    {
+      showFilter && (
+        <NavButton>
+          <button id="filterBtn" class="icon-btn" aria-label="Filter feeds">
+            <FunnelIcon />
+          </button>
+        </NavButton>
+      )
+    }
+
     {
       backUrl && (
         <NavButton>
@@ -49,4 +61,25 @@ const { title, backUrl } = Astro.props;
     margin: 0;
     display: flex;
   }
+  .icon-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 20px;
+    height: 20px;
+    padding: 0;
+    border: none;
+    background: none;
+    color: #000;
+    cursor: pointer;
+  }
 </style>
+
+<script>
+  const filterBtn = document.getElementById("filterBtn");
+  if (filterBtn) {
+    filterBtn.addEventListener("click", () => {
+      document.dispatchEvent(new CustomEvent("inkflux:open-filter"));
+    });
+  }
+</script>

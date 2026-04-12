@@ -1,0 +1,44 @@
+---
+// No props — the header is always the same content
+---
+
+<div class="filter-header">
+  <span class="filter-title">Filter</span>
+  <button id="filterClose" class="filter-close-btn" aria-label="Close filter"
+    >✕</button
+  >
+</div>
+
+<style>
+  .filter-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.75rem 1rem;
+    border-bottom: 2px solid #222;
+    position: sticky;
+    top: 0;
+    background: #fff;
+  }
+
+  .filter-title {
+    font-size: 1rem;
+    font-weight: bold;
+  }
+
+  .filter-close-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 2rem;
+    height: 2rem;
+    border: 1px solid #ccc;
+    background: #fff;
+    font-size: 1rem;
+    cursor: pointer;
+  }
+
+  .filter-close-btn:active {
+    background: #f0f0f0;
+  }
+</style>

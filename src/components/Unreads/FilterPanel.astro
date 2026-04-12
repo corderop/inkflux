@@ -1,0 +1,156 @@
+---
+import type { Feed } from "../../lib/miniflux-client/types";
+import FilterHeader from "./filter/FilterHeader.astro";
+import FilterFooter from "./filter/FilterFooter.astro";
+import CategoryGroup from "./filter/CategoryGroup.astro";
+
+interface Props {
+  feeds: Feed[];
+  excludedCategoryIds: number[];
+  excludedFeedIds: number[];
+}
+
+const { feeds, excludedCategoryIds, excludedFeedIds } = Astro.props;
+
+// Group feeds by category, both sorted alphabetically
+const categoriesMap = new Map<
+  number,
+  { id: number; title: string; feeds: Feed[] }
+>();
+
+for (const feed of feeds) {
+  const cat = feed.category;
+  if (!categoriesMap.has(cat.id)) {
+    categoriesMap.set(cat.id, { id: cat.id, title: cat.title, feeds: [] });
+  }
+  categoriesMap.get(cat.id)!.feeds.push(feed);
+}
+
+const categories = [...categoriesMap.values()]
+  .sort((a, b) => a.title.localeCompare(b.title))
+  .map((cat) => ({
+    ...cat,
+    feeds: cat.feeds.sort((a, b) => a.title.localeCompare(b.title)),
+  }));
+---
+
+<div
+  id="filterPanel"
+  class="filter-panel"
+  role="dialog"
+  aria-modal="true"
+  aria-label="Filter feeds"
+>
+  <FilterHeader />
+
+  <div class="filter-body">
+    {
+      categories.map((cat) => (
+        <CategoryGroup
+          categoryId={cat.id}
+          categoryTitle={cat.title}
+          isIncluded={!excludedCategoryIds.includes(cat.id)}
+          feeds={cat.feeds}
+          excludedFeedIds={excludedFeedIds}
+        />
+      ))
+    }
+  </div>
+
+  <FilterFooter />
+</div>
+
+<script>
+  import { FeedFilterStore } from "../../lib/feed-filter-store/index";
+
+  const panel = document.getElementById("filterPanel");
+  const closeBtn = document.getElementById("filterClose");
+  const applyBtn = document.getElementById("filterApply");
+
+  if (!panel || !closeBtn || !applyBtn) {
+    console.error("[FilterPanel] Required elements not found.");
+  } else {
+    // Open panel when the NavBar filter button fires the custom event
+    document.addEventListener("inkflux:open-filter", () => {
+      panel.style.display = "flex";
+    });
+
+    // Close without saving
+    closeBtn.addEventListener("click", () => {
+      panel.style.display = "none";
+    });
+
+    // Toggle expand/collapse when a category checkbox changes
+    const categoryCbs = panel.querySelectorAll<HTMLInputElement>(
+      ".filter-category-cb",
+    );
+
+    categoryCbs.forEach((catCb) => {
+      catCb.addEventListener("change", () => {
+        const categoryId = catCb.dataset.categoryId;
+        const feedList = panel.querySelector<HTMLElement>(
+          `[data-category-feeds="${categoryId}"]`,
+        );
+        const indicator = catCb
+          .closest(".category-row")
+          ?.querySelector(".expand-indicator");
+
+        if (feedList) {
+          feedList.style.display = catCb.checked ? "" : "none";
+        }
+        if (indicator) {
+          indicator.textContent = catCb.checked ? "▼" : "▶";
+        }
+      });
+    });
+
+    // Save state and reload on Apply
+    applyBtn.addEventListener("click", () => {
+      const store = new FeedFilterStore();
+
+      const excludedCategoryIds = [
+        ...panel.querySelectorAll<HTMLInputElement>(".filter-category-cb"),
+      ]
+        .filter((cb) => !cb.checked)
+        .map((cb) => Number(cb.value));
+
+      // Only track per-feed exclusions for included categories —
+      // excluded categories already cover all their feeds server-side.
+      const excludedFeedIds = [
+        ...panel.querySelectorAll<HTMLInputElement>(".filter-feed-cb"),
+      ]
+        .filter((cb) => {
+          if (!cb.checked) {
+            // Confirm the parent category is still included
+            const catId = cb.dataset.categoryId;
+            const catCb = panel.querySelector<HTMLInputElement>(
+              `.filter-category-cb[data-category-id="${catId}"]`,
+            );
+            return catCb?.checked ?? true;
+          }
+          return false;
+        })
+        .map((cb) => Number(cb.value));
+
+      store.setState({ excludedCategoryIds, excludedFeedIds });
+      window.location.reload();
+    });
+  }
+</script>
+
+<style>
+  .filter-panel {
+    /* Hidden by default — toggled via JS; no transition (E-Ink hostile) */
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: #fff;
+    z-index: 100;
+    flex-direction: column;
+  }
+
+  .filter-body {
+    flex: 1;
+    overflow-y: auto;
+  }
+</style>

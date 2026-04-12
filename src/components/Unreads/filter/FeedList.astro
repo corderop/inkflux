@@ -1,0 +1,68 @@
+---
+import type { Feed } from "../../../lib/miniflux-client/types";
+
+interface Props {
+  categoryId: number;
+  feeds: Feed[];
+  excludedFeedIds: number[];
+  isVisible: boolean;
+}
+
+const { categoryId, feeds, excludedFeedIds, isVisible } = Astro.props;
+---
+
+<div
+  class="feed-list"
+  data-category-feeds={categoryId}
+  style={isVisible ? "" : "display: none"}
+>
+  {
+    feeds.map((feed) => (
+      <label class="feed-row">
+        <input
+          type="checkbox"
+          class="filter-feed-cb"
+          value={feed.id}
+          data-feed-id={feed.id}
+          data-category-id={categoryId}
+          checked={!excludedFeedIds.includes(feed.id)}
+        />
+        <span class="feed-name">{feed.title}</span>
+      </label>
+    ))
+  }
+</div>
+
+<style>
+  .feed-list {
+    border-top: 1px solid #ddd;
+  }
+
+  .feed-row {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    /* Indent feeds visually below their category */
+    padding: 0.875rem 1rem 0.875rem 2.5rem;
+    border-bottom: 1px solid #eee;
+    font-size: 1rem;
+    cursor: pointer;
+  }
+
+  .feed-row:last-child {
+    border-bottom: none;
+  }
+
+  .feed-row input[type="checkbox"] {
+    width: 1.25rem;
+    height: 1.25rem;
+    flex-shrink: 0;
+    cursor: pointer;
+  }
+
+  .feed-name {
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+  }
+</style>

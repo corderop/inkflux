@@ -1,0 +1,36 @@
+---
+import CategoryRow from "./CategoryRow.astro";
+import FeedList from "./FeedList.astro";
+import type { Feed } from "../../../lib/miniflux-client/types";
+
+interface Props {
+  categoryId: number;
+  categoryTitle: string;
+  isIncluded: boolean;
+  feeds: Feed[];
+  excludedFeedIds: number[];
+}
+
+const { categoryId, categoryTitle, isIncluded, feeds, excludedFeedIds } =
+  Astro.props;
+---
+
+<div class="category-group" data-category-id={categoryId}>
+  <CategoryRow
+    categoryId={categoryId}
+    title={categoryTitle}
+    isIncluded={isIncluded}
+  />
+  <FeedList
+    categoryId={categoryId}
+    feeds={feeds}
+    excludedFeedIds={excludedFeedIds}
+    isVisible={isIncluded}
+  />
+</div>
+
+<style>
+  .category-group {
+    border-bottom: 2px solid #ddd;
+  }
+</style>
