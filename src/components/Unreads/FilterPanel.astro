@@ -91,9 +91,9 @@ const categories = [...categoriesMap.values()]
         const feedList = panel.querySelector<HTMLElement>(
           `[data-category-feeds="${categoryId}"]`,
         );
-        const indicator = catCb
-          .closest(".category-row")
-          ?.querySelector(".expand-indicator");
+        const categoryRow = catCb.closest(".category-row");
+        const indicator =
+          categoryRow && categoryRow.querySelector(".expand-indicator");
 
         if (feedList) {
           feedList.style.display = catCb.checked ? "" : "none";
@@ -124,9 +124,9 @@ const categories = [...categoriesMap.values()]
             // Confirm the parent category is still included
             const catId = cb.dataset.categoryId;
             const catCb = panel.querySelector<HTMLInputElement>(
-              `.filter-category-cb[data-category-id="${catId}"]`,
+              '.filter-category-cb[data-category-id="' + catId + '"]',
             );
-            return catCb?.checked ?? true;
+            return catCb ? catCb.checked : true;
           }
           return false;
         })
@@ -142,15 +142,29 @@ const categories = [...categoriesMap.values()]
   .filter-panel {
     /* Hidden by default — toggled via JS; no transition (E-Ink hostile) */
     display: none;
-    position: fixed;
-    inset: 0;
+    /* Use absolute instead of fixed: Kindle's old WebKit doesn't size
+       fixed elements to the full viewport correctly. The panel is
+       toggled into a flex container so absolute + 100% dimensions
+       cover the whole screen reliably. */
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    /* Explicit height is required so the flex child can scroll */
+    height: 100%;
     background: #fff;
     z-index: 100;
     flex-direction: column;
+    box-sizing: border-box;
   }
 
   .filter-body {
     flex: 1;
-    overflow-y: auto;
+    /* overflow-y: scroll is more reliable than auto on old WebKit */
+    overflow-y: scroll;
+    /* Needed so the flex child respects the parent's bounded height */
+    min-height: 0;
   }
 </style>
