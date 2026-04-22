@@ -6,14 +6,18 @@ import IconLink from "./templates/IconLink.astro";
 import ArrowLeft from "../icons/ArrowLeft.astro";
 import FunnelIcon from "../icons/FunnelIcon.astro";
 import LogoutIcon from "../icons/LogoutIcon.astro";
+import EyeIcon from "../icons/EyeIcon.astro";
+import EyeSlashIcon from "../icons/EyeSlashIcon.astro";
 
 interface Props {
   title: string;
   backUrl?: string;
   showFilter?: boolean;
+  entryId?: number;
+  entryStatus?: "read" | "unread";
 }
 
-const { title, backUrl, showFilter } = Astro.props;
+const { title, backUrl, showFilter, entryId, entryStatus } = Astro.props;
 ---
 
 <nav>
@@ -39,6 +43,35 @@ const { title, backUrl, showFilter } = Astro.props;
     }
 
     <NavTitle title={title} />
+
+    {
+      entryId && entryStatus && (
+        <NavButton>
+          <button
+            id="toggleReadBtn"
+            class="icon-btn"
+            data-entry-id={entryId}
+            data-entry-status={entryStatus}
+            aria-label={
+              entryStatus === "read" ? "Mark as unread" : "Mark as read"
+            }
+          >
+            <span
+              class="icon-read"
+              style={entryStatus === "read" ? "" : "display: none;"}
+            >
+              <EyeSlashIcon />
+            </span>
+            <span
+              class="icon-unread"
+              style={entryStatus === "read" ? "display: none;" : ""}
+            >
+              <EyeIcon />
+            </span>
+          </button>
+        </NavButton>
+      )
+    }
 
     <NavButton>
       <button id="logoutBtn" class="icon-btn" aria-label="Log out">
@@ -91,6 +124,43 @@ const { title, backUrl, showFilter } = Astro.props;
   if (logoutBtn) {
     logoutBtn.addEventListener("click", () => {
       document.dispatchEvent(new CustomEvent("inkflux:open-logout"));
+    });
+  }
+
+  const toggleReadBtn = document.getElementById("toggleReadBtn");
+  if (toggleReadBtn) {
+    toggleReadBtn.addEventListener("click", function () {
+      const entryId = this.getAttribute("data-entry-id");
+      const currentStatus = this.getAttribute("data-entry-status");
+      const nextStatus = currentStatus === "read" ? "unread" : "read";
+
+      this.setAttribute("data-entry-status", nextStatus);
+      this.setAttribute(
+        "aria-label",
+        nextStatus === "read" ? "Mark as unread" : "Mark as read",
+      );
+
+      const iconRead = this.querySelector(".icon-read") as HTMLElement;
+      const iconUnread = this.querySelector(".icon-unread") as HTMLElement;
+
+      if (iconRead && iconUnread) {
+        if (nextStatus === "read") {
+          iconRead.style.display = "";
+          iconUnread.style.display = "none";
+        } else {
+          iconRead.style.display = "none";
+          iconUnread.style.display = "";
+        }
+      }
+
+      document.dispatchEvent(
+        new CustomEvent("inkflux:toggle-read", {
+          detail: {
+            entryId,
+            status: nextStatus,
+          },
+        }),
+      );
     });
   }
 </script>
