@@ -1,10 +1,11 @@
 ---
-import Logout from "./actions/Logout.astro";
+import LogoutModal from "./actions/LogoutModal.astro";
 import NavButton from "./templates/NavButton.astro";
 import NavTitle from "./templates/NavTitle.astro";
 import IconLink from "./templates/IconLink.astro";
 import ArrowLeft from "../icons/ArrowLeft.astro";
 import FunnelIcon from "../icons/FunnelIcon.astro";
+import LogoutIcon from "../icons/LogoutIcon.astro";
 
 interface Props {
   title: string;
@@ -40,10 +41,14 @@ const { title, backUrl, showFilter } = Astro.props;
     <NavTitle title={title} />
 
     <NavButton>
-      <Logout url="/api/logout" />
+      <button id="logoutBtn" class="icon-btn" aria-label="Log out">
+        <LogoutIcon />
+      </button>
     </NavButton>
   </ul>
 </nav>
+
+<LogoutModal url="/api/logout" />
 
 <style>
   nav {
@@ -79,6 +84,13 @@ const { title, backUrl, showFilter } = Astro.props;
   if (filterBtn) {
     filterBtn.addEventListener("click", () => {
       document.dispatchEvent(new CustomEvent("inkflux:open-filter"));
+    });
+  }
+
+  const logoutBtn = document.getElementById("logoutBtn");
+  if (logoutBtn) {
+    logoutBtn.addEventListener("click", () => {
+      document.dispatchEvent(new CustomEvent("inkflux:open-logout"));
     });
   }
 </script>
