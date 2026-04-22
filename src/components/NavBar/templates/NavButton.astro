@@ -1,12 +1,4 @@
----
-interface Props {
-  isHidden?: boolean;
-}
-
-const { isHidden = false } = Astro.props;
----
-
-<li class="nav-button" style={isHidden ? "visibility: hidden" : ""}>
+<li class="nav-button">
   <slot />
 </li>
 

@@ -17,17 +17,25 @@ const { title, backUrl, showFilter } = Astro.props;
 
 <nav>
   <ul>
-    <NavButton isHidden={!showFilter}>
-      <button id="filterBtn" class="icon-btn" aria-label="Filter feeds">
-        <FunnelIcon />
-      </button>
-    </NavButton>
+    {
+      showFilter && (
+        <NavButton>
+          <button id="filterBtn" class="icon-btn" aria-label="Filter feeds">
+            <FunnelIcon />
+          </button>
+        </NavButton>
+      )
+    }
 
-    <NavButton isHidden={!backUrl}>
-      <IconLink url={backUrl!}>
-        <ArrowLeft />
-      </IconLink>
-    </NavButton>
+    {
+      backUrl && (
+        <NavButton>
+          <IconLink url={backUrl!}>
+            <ArrowLeft />
+          </IconLink>
+        </NavButton>
+      )
+    }
 
     <NavTitle title={title} />
 
