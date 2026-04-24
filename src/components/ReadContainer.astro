@@ -39,7 +39,7 @@ try {
     title={`${entry.feed.title} - ${entry.title}`}
     backUrl="/unreads"
     entryId={entry.id}
-    entryStatus={entry.status}
+    entryStatus={entry.status as "read" | "unread"}
   />
   <div class="article-wrapper">
     <Article content={entry.content} />
