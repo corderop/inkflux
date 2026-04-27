@@ -45,21 +45,3 @@ try {
     <Article content={entry.content} />
   </div>
 </div>
-
-<script>
-  document.addEventListener("inkflux:toggle-read", function (e: Event) {
-    const customEvent = e as CustomEvent;
-    const detail = customEvent.detail;
-    if (!detail) return;
-
-    fetch(`/api/entries/${detail.entryId}/toggle`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({ status: detail.status }),
-    }).catch(function (error) {
-      console.error("Failed to toggle read status", error);
-    });
-  });
-</script>

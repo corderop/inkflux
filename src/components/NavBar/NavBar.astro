@@ -113,6 +113,8 @@ const { title, backUrl, showFilter, entryId, entryStatus } = Astro.props;
 </style>
 
 <script>
+  import { API_EVENTS } from "../../lib/client/events";
+
   const filterBtn = document.getElementById("filterBtn");
   if (filterBtn) {
     filterBtn.addEventListener("click", () => {
@@ -154,7 +156,7 @@ const { title, backUrl, showFilter, entryId, entryStatus } = Astro.props;
       }
 
       document.dispatchEvent(
-        new CustomEvent("inkflux:toggle-read", {
+        new CustomEvent(API_EVENTS.TOGGLE_READ, {
           detail: {
             entryId,
             status: nextStatus,
@@ -162,5 +164,40 @@ const { title, backUrl, showFilter, entryId, entryStatus } = Astro.props;
         }),
       );
     });
+
+    document.addEventListener(
+      API_EVENTS.TOGGLE_READ_ERROR,
+      function (e: Event) {
+        const customEvent = e as CustomEvent;
+        const detail = customEvent.detail;
+        if (!detail) return;
+
+        if (toggleReadBtn.getAttribute("data-entry-id") == detail.entryId) {
+          const revertedStatus = detail.status === "read" ? "unread" : "read";
+          toggleReadBtn.setAttribute("data-entry-status", revertedStatus);
+          toggleReadBtn.setAttribute(
+            "aria-label",
+            revertedStatus === "read" ? "Mark as unread" : "Mark as read",
+          );
+
+          const iconRead = toggleReadBtn.querySelector(
+            ".icon-read",
+          ) as HTMLElement;
+          const iconUnread = toggleReadBtn.querySelector(
+            ".icon-unread",
+          ) as HTMLElement;
+
+          if (iconRead && iconUnread) {
+            if (revertedStatus === "read") {
+              iconRead.style.display = "";
+              iconUnread.style.display = "none";
+            } else {
+              iconRead.style.display = "none";
+              iconUnread.style.display = "";
+            }
+          }
+        }
+      },
+    );
   }
 </script>
